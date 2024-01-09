@@ -116,7 +116,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
             // Configure the AutoBuilder last
-        AutoBuilder.configureHolonomic(
+        /*AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
@@ -129,7 +129,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
             this // Reference to this subsystem to set requirements
-        );
+        );*/
     }
 
     public double getTurboSpeedFactor(){
@@ -164,7 +164,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(gyro.getAngle(), 360); 
+        return Math.IEEEremainder(gyro.getAngle(gyro.getYawAxis()), 360); 
     }
 
     public Rotation2d getRotation2d() {

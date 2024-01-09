@@ -2,8 +2,9 @@ package frc.robot.subsystems;
 
 //import com.revrobotics.CANEncoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+//import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.math.controller.PIDController;
@@ -16,8 +17,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+//import com.ctre.phoenix.motorcontrol.ControlMode;
+//import com.ctre.phoenix6.controls.ControlRequest;
+//import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 public class SwerveModule implements Sendable {
     private final TalonFX driveTalonFX;
@@ -53,8 +57,7 @@ public class SwerveModule implements Sendable {
         directionDutyCycle = new DutyCycleEncoder(absoluteEncoderId);
         directionDutyCycle.setDutyCycleRange(1/4096, 4096/4096);
 
-
-        driveTalonFX.configFactoryDefault();
+        driveTalonFX.getConfigurator().apply(new TalonFXConfiguration());
 
         driveTalonFX.setInverted(driveMotorReversed);
         turningMotor.setInverted(turningMotorReversed);
@@ -80,7 +83,7 @@ public class SwerveModule implements Sendable {
     }
 
     public double getDrivePosition() {
-        return (driveTalonFX.getSelectedSensorPosition() / 2048)
+        return (driveTalonFX.getRotorPosition().getValue() / 2048)
             * ModuleConstants.kDriveEncoderRot2Meter;
     }
 
@@ -95,7 +98,7 @@ public class SwerveModule implements Sendable {
       }
 
     public double getDriveVelocity() {
-        return (driveTalonFX.getSelectedSensorVelocity() / 2048) 
+        return (driveTalonFX.getVelocity().getValue() / 2048) 
          * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
     }
     public double getTurningVelocity() {
@@ -121,7 +124,7 @@ public class SwerveModule implements Sendable {
     }
 
     public void resetEncoders() {
-        driveTalonFX.setSelectedSensorPosition(0.0);
+        driveTalonFX.setPosition(0.0);
         turningEncoder.setPosition(getAbsoluteEncoderRad()); //TODO: this isn't referencing the right encoder. now using directionDutyCycle
     }
 
@@ -134,21 +137,22 @@ public class SwerveModule implements Sendable {
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
 
         if (Math.abs(state.speedMetersPerSecond) < 0.005) {
-            driveTalonFX.set(ControlMode.PercentOutput, 0);
+            //driveTalonFX.set(ControlMode.PercentOutput, 0);
+            driveTalonFX.set(0);
             return;
         }
-        driveTalonFX.set(ControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        driveTalonFX.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
     }
 
     public void stop() {
-        driveTalonFX.set(ControlMode.PercentOutput, 0);
+        driveTalonFX.set(0);
         turningMotor.set(0);
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         // These are the values placed on the dashboard if the module is added.
-        builder.addDoubleProperty("Drive Percentage", () -> driveTalonFX.getMotorOutputPercent() , null);
+        builder.addDoubleProperty("Drive Percentage", () -> driveTalonFX.getDutyCycle().getValue() , null);
         builder.addDoubleProperty("Rotate Percentage", () -> turningMotor.getAppliedOutput() , null);
         builder.addDoubleProperty("RotationRad", () -> getTurningPosition(), null);
     }
