@@ -81,7 +81,7 @@ public class RobotContainer {
 
     m_driverController.y().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-    //m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem));
+    m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem));
 
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
     //     Pressed is robot oriented
