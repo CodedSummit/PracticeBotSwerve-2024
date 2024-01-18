@@ -121,6 +121,7 @@ public class AddressableLedSubsystem extends SubsystemBase {
     }
     return number;
   }
+  
   public void setStripRandom(){
     for(int i = 0; i<m_buffer.getLength(); i++){
       m_buffer.setRGB(i, randomNumber(0,255), randomNumber(0,255) , randomNumber(0,255));
