@@ -15,8 +15,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -52,6 +54,10 @@ public class ChaseTagCommand extends Command {
   private  DoublePublisher m_omegaPub;
   private double m_xRobotPose;
   private double m_yRobotPose;
+
+  private  DoublePublisher m_xPub;
+  private  DoublePublisher m_yPub;
+  private  DoublePublisher m_omegaPub;
 
   public ChaseTagCommand(
         VisionSubsystem visionSubsystem, 
