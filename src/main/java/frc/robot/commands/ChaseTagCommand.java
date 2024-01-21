@@ -15,16 +15,20 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class ChaseTagCommand extends Command {
   
-  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(2, 2);
-  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(2, 2);
+  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(.1, 32);
+  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(.1, 32);
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRATINTS = 
-      new TrapezoidProfile.Constraints(8, 8);
+      new TrapezoidProfile.Constraints(.1, 8);
   
   private static final int TAG_TO_CHASE = 1;
   private static final Transform2d TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
@@ -43,6 +47,13 @@ public class ChaseTagCommand extends Command {
 
   private Pose2d goalPose;
   private PhotonTrackedTarget lastTarget;
+   private  DoublePublisher m_xPub;
+  private  DoublePublisher m_yPub;
+  private  DoublePublisher m_xVelPub;
+  private  DoublePublisher m_yVelPub;
+  private  DoublePublisher m_omegaPub;
+  private double m_xRobotPose;
+  private double m_yRobotPose;
 
   private  DoublePublisher m_xPub;
   private  DoublePublisher m_yPub;
@@ -56,7 +67,7 @@ public class ChaseTagCommand extends Command {
    
     xController.setTolerance(0.1);
     yController.setTolerance(0.1);
-    omegaController.setTolerance(Units.degreesToRadians(3));
+    omegaController.setTolerance(Units.degreesToRadians(10));
     omegaController.enableContinuousInput(-1, 1);
 
     addRequirements(drivetrainSubsystem);
@@ -71,13 +82,14 @@ public class ChaseTagCommand extends Command {
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
     setupPublishers();
-
   }
- private void setupPublishers(){
+  private void setupPublishers(){
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable table = inst.getTable("Vision/goal");
-    m_xPub = table.getDoubleTopic("X").publish();
-    m_yPub = table.getDoubleTopic("Y").publish();
+    m_xPub = table.getDoubleTopic("Xpose").publish();
+    m_yPub = table.getDoubleTopic("Ypose").publish();
+    m_xVelPub  = table.getDoubleTopic("Xvel").publish();
+    m_yVelPub  = table.getDoubleTopic("Yvel").publish();
     m_omegaPub = table.getDoubleTopic("OmegaRad").publish();
   }
 
@@ -94,7 +106,7 @@ public class ChaseTagCommand extends Command {
           var camToTarget = target.getBestCameraToTarget();
           var transform = new Transform2d(
                   camToTarget.getTranslation().toTranslation2d(),
-                  camToTarget.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90)));  // not sure this 90 deg correctoin needed
+                  camToTarget.getRotation().toRotation2d());  // not sure this 90 deg correctoin needed
 
           // Transform the robot's pose to find the tag's pose
           var cameraPose = robotPose.transformBy(CAMERA_TO_ROBOT.inverse());
@@ -123,14 +135,17 @@ public class ChaseTagCommand extends Command {
       if (yController.atGoal()) {
           ySpeed = 0;
       }
-
+      m_xVelPub.set(xSpeed);
+      m_yVelPub.set(ySpeed);
+      m_xRobotPose = robotPose.getX();
+      m_yRobotPose = robotPose.getY();
       double omegaSpeed = omegaController.calculate(robotPose.getRotation().getRadians());
       if (omegaController.atGoal()) {
           omegaSpeed = 0;
       }
 
       ChassisSpeeds goalSpeeds = new ChassisSpeeds(xSpeed,ySpeed,omegaSpeed);
-      
+      SmartDashboard.putData("Robot pose", this);
       drivetrainSubsystem.driveRobotRelative(goalSpeeds);
       
   }
@@ -140,4 +155,11 @@ public class ChaseTagCommand extends Command {
     drivetrainSubsystem.stopModules();
   }
 
+  public void initSendable(SendableBuilder builder) {
+    // 
+    builder.addDoubleProperty("Robot Pose X", () -> m_xRobotPose , (n) -> m_xRobotPose =n);
+    builder.addDoubleProperty("Robot Pose Y", () -> m_yRobotPose , (n) -> m_yRobotPose = n);
+  }
+
 }
+
