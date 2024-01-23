@@ -114,7 +114,7 @@ public class SwerveSubsystem extends SubsystemBase {
             .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
             .getEntry();
 
-
+        swerveTab.add("Gyro data", gyro);
             // Configure the AutoBuilder last
         /*AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier

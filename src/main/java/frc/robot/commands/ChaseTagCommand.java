@@ -17,6 +17,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -55,10 +57,6 @@ public class ChaseTagCommand extends Command {
   private double m_xRobotPose;
   private double m_yRobotPose;
 
-  private  DoublePublisher m_xPub;
-  private  DoublePublisher m_yPub;
-  private  DoublePublisher m_omegaPub;
-
   public ChaseTagCommand(
         VisionSubsystem visionSubsystem, 
         SwerveSubsystem drivetrainSubsystem) {
@@ -71,6 +69,8 @@ public class ChaseTagCommand extends Command {
     omegaController.enableContinuousInput(-1, 1);
 
     addRequirements(drivetrainSubsystem);
+
+
   }
 
   @Override
@@ -82,7 +82,15 @@ public class ChaseTagCommand extends Command {
     xController.reset(robotPose.getX());
     yController.reset(robotPose.getY());
     setupPublishers();
+    setupShuffleboard();
   }
+  private void setupShuffleboard() {
+    ShuffleboardTab vision = Shuffleboard.getTab("Vision");
+    vision.add("XController",xController);
+    vision.add("Ycontroller",yController);
+    vision.add("omegaController",omegaController);
+  }
+
   private void setupPublishers(){
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable table = inst.getTable("Vision/goal");

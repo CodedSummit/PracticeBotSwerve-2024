@@ -21,9 +21,10 @@ public class AddressableLedSubsystem extends SubsystemBase {
     m_led = new AddressableLED(port);
     m_length = length;
     m_buffer = new AddressableLEDBuffer(m_length);
+    m_led.setLength(m_length);
     m_led.setData(m_buffer);
-    setLengthStrip(length, m_led);
-    appendItem();
+
+    //appendItem();
   }
 
   @Override
@@ -42,11 +43,11 @@ public class AddressableLedSubsystem extends SubsystemBase {
     }
   }
 
-  public void setLengthStrip(int stripLength, AddressableLED led){
+  /*public void setLengthStrip(int stripLength, AddressableLED led){
     //Try to only call this one once.
     led.setLength(stripLength);
     m_length = stripLength;
-  }
+  }*/
 
   public void setStripRed(){
     for(int i = 0; i<m_buffer.getLength(); i++){

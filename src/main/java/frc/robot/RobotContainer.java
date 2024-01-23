@@ -10,6 +10,7 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.NothingCommand;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -35,6 +36,7 @@ public class RobotContainer {
 
   private SwerveJoystickCmd swerveJoystickCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
+  private final AddressableLedSubsystem m_led = new AddressableLedSubsystem(20,9);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -96,6 +98,9 @@ public class RobotContainer {
     m_driverController.axisGreaterThan(3, 0.5)
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
+
+    m_driverController.povDown().onTrue(new InstantCommand(() ->m_led.setStripBlue()));
+    m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripRed()));
 
   }
 
