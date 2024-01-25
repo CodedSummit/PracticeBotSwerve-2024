@@ -49,11 +49,8 @@ public class ChaseTagCommand extends Command {
 
   private Pose2d goalPose;
   private PhotonTrackedTarget lastTarget;
-   private  DoublePublisher m_xPub;
-  private  DoublePublisher m_yPub;
   private  DoublePublisher m_xVelPub;
   private  DoublePublisher m_yVelPub;
-  private  DoublePublisher m_omegaPub;
   private double m_xRobotPose;
   private double m_yRobotPose;
 
