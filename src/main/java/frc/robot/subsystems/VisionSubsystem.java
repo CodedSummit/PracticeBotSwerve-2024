@@ -28,7 +28,7 @@ public class VisionSubsystem extends SubsystemBase {
     if (result.hasTargets()) {
       var target = result.getBestTarget();
       int targetNumber = target.getFiducialId();
-      System.out.println(" Target number:"+targetNumber+" Yaw, pitch:" + target.getYaw()+ "  " + target.getPitch());
+      // System.out.println(" Target number:"+targetNumber+" Yaw, pitch:" + target.getYaw()+ "  " + target.getPitch());
     }
     getRange();
   }
@@ -47,7 +47,7 @@ public class VisionSubsystem extends SubsystemBase {
                         TARGET_HEIGHT_METERS,
                         CAMERA_PITCH_RADIANS,
                         Units.degreesToRadians(result.getBestTarget().getPitch()));
-        System.out.println(" Range to target:"+range);
+       //  System.out.println(" Range to target:"+range);
     }
   }
   @Override

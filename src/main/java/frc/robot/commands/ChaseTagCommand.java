@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -92,9 +93,13 @@ public class ChaseTagCommand extends Command {
   }
   private void setupShuffleboard() {
     ShuffleboardTab vision = Shuffleboard.getTab("Vision");
+    try {
     vision.add("XController",xController);
     vision.add("Ycontroller",yController);
     vision.add("omegaController",omegaController);
+    }
+    catch (Exception e){//eat it 
+    }
   }
 
   private void setupPublishers(){
@@ -160,6 +165,7 @@ public class ChaseTagCommand extends Command {
       if (omegaController.atGoal()) {
           omegaSpeed = 0;
       }
+      omegaSpeed=0;  //temp
 
       ChassisSpeeds goalSpeeds = new ChassisSpeeds(xSpeed,ySpeed,omegaSpeed);
       SmartDashboard.putData("Robot pose", this);
