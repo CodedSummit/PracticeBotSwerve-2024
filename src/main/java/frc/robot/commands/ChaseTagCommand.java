@@ -94,11 +94,10 @@ public class ChaseTagCommand extends Command {
   private void setupShuffleboard() {
     ShuffleboardTab vision = Shuffleboard.getTab("Vision");
     try {
-    vision.add("XController",xController);
-    vision.add("Ycontroller",yController);
-    vision.add("omegaController",omegaController);
-    }
-    catch (Exception e){//eat it 
+      vision.add("XController", xController);
+      vision.add("Ycontroller", yController);
+      vision.add("omegaController", omegaController);
+    } catch (Exception e) {// eat it.  for some reason it fails if the tab exists
     }
   }
 
@@ -116,6 +115,10 @@ public class ChaseTagCommand extends Command {
   public void execute() {
       var robotPose = drivetrainSubsystem.getPose();
       var target = m_VisionSubsystem.getTargetForTag(TAG_TO_CHASE);
+
+      if (target == null && lastTarget == null){
+        return; //  No target yet, and have not seen one yet.  Come back later.....
+      }
 
       if (target != null && !target.equals(lastTarget)) {
         // This is new target data, so recalculate the goal
