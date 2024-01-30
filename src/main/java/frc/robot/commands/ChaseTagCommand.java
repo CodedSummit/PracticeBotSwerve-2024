@@ -168,7 +168,7 @@ public class ChaseTagCommand extends Command {
       if (omegaController.atGoal()) {
           omegaSpeed = 0;
       }
-      omegaSpeed=0;  //temp
+      // omegaSpeed=0;  //temp
 
       ChassisSpeeds goalSpeeds = new ChassisSpeeds(xSpeed,ySpeed,omegaSpeed);
       SmartDashboard.putData("Robot pose", this);
