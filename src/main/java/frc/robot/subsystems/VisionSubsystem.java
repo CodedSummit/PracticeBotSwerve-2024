@@ -22,6 +22,8 @@ public class VisionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+/**
+
 
     var result = m_camera.getLatestResult();
     // System.out.println("Camera results:"+ result.toString());
@@ -31,6 +33,7 @@ public class VisionSubsystem extends SubsystemBase {
       // System.out.println(" Target number:"+targetNumber+" Yaw, pitch:" + target.getYaw()+ "  " + target.getPitch());
     }
     getRange();
+    **/
   }
 
   /**
