@@ -83,7 +83,7 @@ public class SwerveModule implements Sendable {
     }
 
     public double getDrivePosition() {
-        return (driveTalonFX.getRotorPosition().getValue() / 2048)
+        return (driveTalonFX.getRotorPosition().getValue())
             * ModuleConstants.kDriveEncoderRot2Meter;
     }
 
@@ -98,7 +98,7 @@ public class SwerveModule implements Sendable {
       }
 
     public double getDriveVelocity() {
-        return (driveTalonFX.getVelocity().getValue() / 2048) 
+        return (driveTalonFX.getVelocity().getValue()) 
          * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
     }
     public double getTurningVelocity() {
