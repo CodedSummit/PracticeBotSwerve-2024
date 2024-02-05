@@ -40,7 +40,7 @@ public class ChaseTagCommand extends Command {
      * Physical location of the camera on the robot, relative to the center of the robot.
      */
   public static final Transform2d CAMERA_TO_ROBOT = 
-        new Transform2d(new Translation2d(inchesToMeters(12.75), 0.0), new Rotation2d(0.0));
+        new Transform2d(new Translation2d(inchesToMeters(-12.75), 0.0), new Rotation2d(0.0));
 
   private static final double STALE_TARGET_TIME = 2.0;
 
