@@ -23,6 +23,7 @@ public class AddressableLedSubsystem extends SubsystemBase {
     m_buffer = new AddressableLEDBuffer(m_length);
     m_led.setLength(m_length);
     m_led.setData(m_buffer);
+    m_led.start();
 
     //appendItem();
   }
@@ -53,6 +54,7 @@ public class AddressableLedSubsystem extends SubsystemBase {
     for(int i = 0; i<m_buffer.getLength(); i++){
       m_buffer.setRGB(i,255,0,0);
     }
+    m_led.setData(m_buffer);
   }
 
   public void setStripOrange(){
@@ -77,6 +79,7 @@ public class AddressableLedSubsystem extends SubsystemBase {
     for(int i = 0; i<m_buffer.getLength(); i++){
       m_buffer.setRGB(i,0,0,255);
     }
+    m_led.setData(m_buffer);
   }
 
   public void setStripPurple(){
