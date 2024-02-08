@@ -43,6 +43,9 @@ public class ChaseTagCommand extends Command {
         new Transform2d(new Translation2d(inchesToMeters(-12.75), 0.0), new Rotation2d(0.0));
 
   private static final double STALE_TARGET_TIME = 2.0;
+  private static final double X_DIFF_THRESHOLD = 0.10;   // Translation difference - in meters
+  private static final double Y_DIFF_THRESHOLD = 0.10;   // Translation difference - in meters
+  private static final double OMEGA_DIFF_THRESHOLD = 10.0;  // Rotation difference - in degrees
 
   private final VisionSubsystem m_VisionSubsystem;
   private final SwerveSubsystem drivetrainSubsystem;
@@ -120,12 +123,16 @@ public class ChaseTagCommand extends Command {
         return; //  No target yet, and have not seen one yet.  Come back later.....
       }
 
-      if (target != null && !target.equals(lastTarget)) {
-        // This is new target data, so recalculate the goal
-        lastTarget = target;
-        // restart our timer on fresh target data (start() method is no-op if alredy running)
+      if (target != null){
+        //We're still seeing a target
+         // restart our timer on fresh target data (start() method is no-op if alredy running)
         m_TargetLastSeen.start();
         m_TargetLastSeen.reset();
+      }
+      
+      if (target != null && targetDataSignificantlyDifferent(target, lastTarget)) {
+        // This is new target data, so recalculate the goal
+        lastTarget = target;
 
         // Get the transformation from the camera to the tag (in 2d)
         var camToTarget = target.getBestCameraToTarget();
@@ -176,7 +183,25 @@ public class ChaseTagCommand extends Command {
       
   }
 
-  public boolean isFinished(){
+  /**
+   *  Returns true if the newTarget is "significantly" different from lastTarget
+   */
+  private boolean targetDataSignificantlyDifferent(PhotonTrackedTarget newTarget, PhotonTrackedTarget lastTarget) {
+    if (newTarget == null || lastTarget == null) return true;
+    if (newTarget.equals(lastTarget)) return false;   //  exactly alike
+
+    // see if the distances are different enough to care
+    if (Math.abs(newTarget.getBestCameraToTarget().getX() - lastTarget.getBestCameraToTarget().getX()) > X_DIFF_THRESHOLD) return true;
+    if (Math.abs(newTarget.getBestCameraToTarget().getY() - lastTarget.getBestCameraToTarget().getY()) > Y_DIFF_THRESHOLD) return true;
+    if (Units.radiansToDegrees(Math.abs(newTarget.getBestCameraToTarget().getRotation().getAngle() - 
+          lastTarget.getBestCameraToTarget().getRotation().getAngle())) > OMEGA_DIFF_THRESHOLD) return true;
+    
+
+    return false;
+  }
+
+public boolean isFinished(){
+
     if (xController.atGoal() && yController.atGoal() && omegaController.atGoal()) {
       // if we're at the goal in all dimensions, we're done
       System.out.println("Reached the Vision target goal - STOPPING");
@@ -200,6 +225,7 @@ public class ChaseTagCommand extends Command {
     builder.addDoubleProperty("Robot Pose X", () -> m_xRobotPose , (n) -> m_xRobotPose =n);
     builder.addDoubleProperty("Robot Pose Y", () -> m_yRobotPose , (n) -> m_yRobotPose = n);
   }
+
 
 }
 
