@@ -29,10 +29,10 @@ import frc.robot.subsystems.VisionSubsystem;
 
 public class ChaseTagCommand extends Command {
   
-  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(.1, 32);
-  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(.1, 32);
+  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(.3, 32);
+  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(.3, 32);
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRATINTS = 
-      new TrapezoidProfile.Constraints(.1, 8);
+      new TrapezoidProfile.Constraints(.3, 8);
   
   private static final int TAG_TO_CHASE = 1;
   private static final Transform2d TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
@@ -43,9 +43,9 @@ public class ChaseTagCommand extends Command {
         new Transform2d(new Translation2d(inchesToMeters(-12.75), 0.0), new Rotation2d(0.0));
 
   private static final double STALE_TARGET_TIME = 2.0;
-  private static final double X_DIFF_THRESHOLD = 0.10;   // Translation difference - in meters
-  private static final double Y_DIFF_THRESHOLD = 0.10;   // Translation difference - in meters
-  private static final double OMEGA_DIFF_THRESHOLD = 10.0;  // Rotation difference - in degrees
+  private static final double X_DIFF_THRESHOLD = 0.50;   // Translation difference - in meters
+  private static final double Y_DIFF_THRESHOLD = 0.50;   // Translation difference - in meters
+  private static final double OMEGA_DIFF_THRESHOLD = 20.0;  // Rotation difference - in degrees
 
   private final VisionSubsystem m_VisionSubsystem;
   private final SwerveSubsystem drivetrainSubsystem;
@@ -133,7 +133,7 @@ public class ChaseTagCommand extends Command {
       if (target != null && targetDataSignificantlyDifferent(target, lastTarget)) {
         // This is new target data, so recalculate the goal
         lastTarget = target;
-
+System.out.println(" Calculating a new goal");
         // Get the transformation from the camera to the tag (in 2d)
         var camToTarget = target.getBestCameraToTarget();
         var transform = new Transform2d(
