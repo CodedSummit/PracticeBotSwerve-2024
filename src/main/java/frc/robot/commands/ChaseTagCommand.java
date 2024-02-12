@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -38,6 +39,7 @@ public class ChaseTagCommand extends Command {
 
   private final VisionSubsystem m_VisionSubsystem;
   private final SwerveSubsystem m_drivetrainSubsystem;
+  private final AddressableLedSubsystem m_LedSubsystem;
   
 
   private Pose2d m_goalPose;
@@ -50,10 +52,12 @@ public class ChaseTagCommand extends Command {
 
   public ChaseTagCommand(
         VisionSubsystem visionSubsystem, 
-        SwerveSubsystem drivetrainSubsystem) {
+        SwerveSubsystem drivetrainSubsystem,
+        AddressableLedSubsystem LEDSubsystem) {
     this.m_VisionSubsystem = visionSubsystem;
     this.m_drivetrainSubsystem = drivetrainSubsystem;
     this.m_driveToPoseCmd = new DriveToPoseCommand(null, drivetrainSubsystem);
+    this.m_LedSubsystem = LEDSubsystem;
 
     addRequirements(visionSubsystem);
   }
@@ -63,6 +67,7 @@ public class ChaseTagCommand extends Command {
     m_goalPose = null;
     m_lastTarget = null;
     
+    m_driveToPoseCmd.initialize();
     m_driveToPoseCmd.updateGoal(null);
     setupShuffleboard();
     m_TargetLastSeen = new Timer();
@@ -85,6 +90,7 @@ public class ChaseTagCommand extends Command {
          // restart our timer on fresh target data (start() method is no-op if alredy running)
         m_TargetLastSeen.start();
         m_TargetLastSeen.reset();
+        m_LedSubsystem.setStripYellow();
       }
       
       if (target != null && targetDataSignificantlyDifferent(target, m_lastTarget)) {
@@ -140,11 +146,12 @@ public class ChaseTagCommand extends Command {
 
 public boolean isFinished(){
 
-   // if (m_driveToPoseCmd.isFinished()) return true;  // we got to where we're going
+    if (m_driveToPoseCmd.isFinished()) return true;  // we got to where we're going
 
     if (m_TargetLastSeen.hasElapsed(STALE_TARGET_TIME)){
       // If we haven't gotten new target data in a while we may have lost sight of it and should stop
       System.out.println("Have not seen the target lately - STOPPING");
+      m_LedSubsystem.setStripRed();
       return true;
     }
     return false;

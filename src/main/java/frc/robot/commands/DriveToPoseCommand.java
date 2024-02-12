@@ -62,7 +62,7 @@ public class DriveToPoseCommand extends Command {
 
   @Override
   public void initialize() {
-   
+
     var robotPose = m_drivetrainSubsystem.getPose();
     m_omegaController.reset(robotPose.getRotation().getRadians());
     m_xController.reset(robotPose.getX());

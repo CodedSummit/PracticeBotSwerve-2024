@@ -54,7 +54,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     // make the chasetag command
-    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem);
+    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led);
     
     configureBindings();
 
@@ -83,7 +83,7 @@ public class RobotContainer {
 
     m_driverController.y().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-    m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem));
+    m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
     //     Pressed is robot oriented
@@ -100,7 +100,7 @@ public class RobotContainer {
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
     m_driverController.povDown().onTrue(new InstantCommand(() ->m_led.setStripBlue()));
-    m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripRed()));
+    m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripPurple()));
 
   }
 
