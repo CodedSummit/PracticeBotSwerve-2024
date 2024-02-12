@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -75,6 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private GenericEntry normalSpeedFactor;
     private GenericEntry dampenedSpeedFactor;
 
+    private final Field2d m_field = new Field2d();
 
     public SwerveSubsystem() {
         new Thread(() -> {
@@ -116,6 +118,8 @@ public class SwerveSubsystem extends SubsystemBase {
             .getEntry();
 
         swerveTab.add("Gyro data", gyro);
+
+        swerveTab.add("Field", m_field);
 
 // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
@@ -211,7 +215,7 @@ public class SwerveSubsystem extends SubsystemBase {
         
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
-
+        m_field.setRobotPose(getPose());
     }
 
     public void stopModules() {
