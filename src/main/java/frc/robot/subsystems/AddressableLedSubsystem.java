@@ -50,54 +50,39 @@ public class AddressableLedSubsystem extends SubsystemBase {
   }*/
 
   public void setStripRed(){
-    for(int i = 0; i<m_buffer.getLength(); i++){
-      m_buffer.setRGB(i,255,0,0);
-    }
-    m_led.setData(m_buffer);
+setStripColor(255,0,0);
   }
 
   public void setStripOrange(){
-    for(int i = 0; i<m_buffer.getLength(); i++){
-      m_buffer.setRGB(i,255,125,0);
-    }
+    setStripColor(255,125,0);
   }
 
   public void setStripYellow(){
-    for(int i = 0; i<m_buffer.getLength(); i++){
-      m_buffer.setRGB(i,255,255,0);
-    }
+    setStripColor(255,255,0);
   }
 
   public void setStripGreen(){
-    for(int i = 0; i<m_buffer.getLength(); i++){
-      m_buffer.setRGB(i,0,255,0);
-    }
+    setStripColor(0,255,0);
   }
 
   public void setStripBlue(){
-    for(int i = 0; i<m_buffer.getLength(); i++){
-      m_buffer.setRGB(i,0,0,255);
-    }
-    m_led.setData(m_buffer);
+    setStripColor(0,0,255);
   }
 
   public void setStripPurple(){
-    for(int i = 0; i<m_buffer.getLength(); i++){
-      m_buffer.setRGB(i,125,0,255);
-    }
+    setStripColor(255,0,255);
   }
 
   public void setStripColor(int r, int g, int b){
     for(int i = 0; i<m_buffer.getLength(); i++){
       m_buffer.setRGB(i,r,g,b);
     }
+    m_led.setData(m_buffer);
   }
 
   //This one may not work, because it sets the LED's colors to black.
   public void setStripOff(){
-    for(int i = 0; i<m_buffer.getLength(); i++){
-      m_buffer.setRGB(i,0,0,0);
-    }
+    setStripColor(0,0,0);
   }
 
   // Both setStripLowerHalf and setStripUpperHalf are experimental and may not work as expected (or at all).
