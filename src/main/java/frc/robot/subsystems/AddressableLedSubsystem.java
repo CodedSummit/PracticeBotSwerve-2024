@@ -25,7 +25,6 @@ public class AddressableLedSubsystem extends SubsystemBase {
     m_led.setData(m_buffer);
     m_led.start();
 
-    //appendItem();
   }
 
   @Override
@@ -101,6 +100,7 @@ public class AddressableLedSubsystem extends SubsystemBase {
     }
   }
 
+  // Both setStripLowerHalf and setStripUpperHalf are experimental and may not work as expected (or at all).
   public void setStripLowerHalf(int r, int g, int b){
     for(int i = 0; i<m_buffer.getLength() - (int) m_buffer.getLength()/2; i++){
       m_buffer.setRGB(i,r,g,b);
