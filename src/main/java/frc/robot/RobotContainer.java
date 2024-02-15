@@ -100,7 +100,7 @@ public class RobotContainer {
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
     m_driverController.povDown().onTrue(new InstantCommand(() ->m_led.setStripBlue()));
-    m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripRed()));
+    m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripPurple()));
 
   }
 
