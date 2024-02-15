@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -25,12 +26,7 @@ public class ChaseTagCommand extends Command {
   
   private static final int TAG_TO_CHASE = 1;
   private static final Transform2d TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
-   /**
-     * Physical location of the camera on the robot, relative to the camera.
-     */
-  public static final Transform2d CAMERA_TO_ROBOT = 
-        new Transform2d(new Translation2d(inchesToMeters(-12.75), 0.0), new Rotation2d(0.0));
-
+   
   private static final double STALE_TARGET_TIME = 2.0;   // how long to wait (sec.) after losing target before giving up
   private static final double DIFF_MAX_THRESHOLD = 0.50;   // Translation difference - in meters
   private static final double DIFF_MIN_RANGE = 0.2;   // Closest we'd get to the target (for scaling threshold)
@@ -47,6 +43,7 @@ public class ChaseTagCommand extends Command {
   private double m_xRobotPose;
   private double m_yRobotPose;
   private Timer m_TargetLastSeen = null;
+  private boolean m_firstTime = true;
 
   private DriveToPoseCommand m_driveToPoseCmd = null;
 
@@ -71,6 +68,7 @@ public class ChaseTagCommand extends Command {
     m_driveToPoseCmd.updateGoal(null);
     setupShuffleboard();
     m_TargetLastSeen = new Timer();
+    m_firstTime = true;
   }
   private void setupShuffleboard() {
     ShuffleboardTab vision = Shuffleboard.getTab("Vision");
@@ -104,12 +102,13 @@ public class ChaseTagCommand extends Command {
             camToTarget.getRotation().toRotation2d());
 
         // Transform the robot's pose to find the tag's pose
-        var cameraPose = robotPose.transformBy(CAMERA_TO_ROBOT.inverse());
+        var cameraPose = robotPose.transformBy(VisionConstants.kFrontCamToRobot.inverse());
         Pose2d targetPose = cameraPose.transformBy(transform);
 
         // Transform the tag's pose to set our goal
         m_goalPose = targetPose.transformBy(TAG_TO_GOAL);
-        m_driveToPoseCmd.updateGoal(m_goalPose);
+        if (m_firstTime) m_driveToPoseCmd.updateGoal(m_goalPose);  // sleazy test to see  if a single update gets us there
+        m_firstTime = false;
         if (!m_driveToPoseCmd.isScheduled()) m_driveToPoseCmd.schedule();
       }
   }
