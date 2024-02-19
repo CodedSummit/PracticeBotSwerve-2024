@@ -107,22 +107,14 @@ public class DriveToPoseCommand extends Command {
     var robotPose = m_drivetrainSubsystem.getPose();
    
     double xSpeed = m_xController.calculate(robotPose.getX());
-    if (m_xController.atGoal()) {
-      xSpeed = 0;
-    }
-
+   
     double ySpeed = m_yController.calculate(robotPose.getY());
-    if (m_yController.atGoal()) {
-      ySpeed = 0;
-    }
+   
     
     m_xRobotPose = robotPose.getX();
     m_yRobotPose = robotPose.getY();
     double omegaSpeed = m_omegaController.calculate(robotPose.getRotation().getRadians());
-    if (m_omegaController.atGoal()) {
-      omegaSpeed = 0;
-    }
-    
+        
     m_Xlog.append(xSpeed);
     m_Ylog.append(ySpeed);
     m_Omegalog.append(omegaSpeed);

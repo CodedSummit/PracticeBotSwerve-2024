@@ -43,8 +43,7 @@ public class ChaseTagCommand extends Command {
   private double m_xRobotPose;
   private double m_yRobotPose;
   private Timer m_TargetLastSeen = null;
-  private boolean m_firstTime = true;
-
+ 
   private DriveToPoseCommand m_driveToPoseCmd = null;
 
   public ChaseTagCommand(
@@ -68,8 +67,7 @@ public class ChaseTagCommand extends Command {
     m_driveToPoseCmd.updateGoal(null);
     setupShuffleboard();
     m_TargetLastSeen = new Timer();
-    m_firstTime = true;
-  }
+    }
   private void setupShuffleboard() {
     ShuffleboardTab vision = Shuffleboard.getTab("Vision");
   }
@@ -107,8 +105,7 @@ public class ChaseTagCommand extends Command {
 
         // Transform the tag's pose to set our goal
         m_goalPose = targetPose.transformBy(TAG_TO_GOAL);
-        if (m_firstTime) m_driveToPoseCmd.updateGoal(m_goalPose);  // sleazy test to see  if a single update gets us there
-        m_firstTime = false;
+        m_driveToPoseCmd.updateGoal(m_goalPose);  
         if (!m_driveToPoseCmd.isScheduled()) m_driveToPoseCmd.schedule();
       }
   }
@@ -139,7 +136,6 @@ public class ChaseTagCommand extends Command {
     double range = Math.sqrt(x*x + y*y);
     if (range > DIFF_MAX_RANGE) return DIFF_MAX_THRESHOLD;    
     double thresh = (Math.max(range-DIFF_MIN_RANGE,0.01)/DIFF_MAX_RANGE) * DIFF_MAX_THRESHOLD;
-  //  System.out.println(">>>>>>>Range, Threshold: "+range+"  "+thresh);
     return thresh;
   }
 
@@ -162,9 +158,12 @@ public boolean isFinished(){
   }
 
   public void initSendable(SendableBuilder builder) {
-    // 
-    builder.addDoubleProperty("Robot Pose X", () -> m_xRobotPose , (n) -> m_xRobotPose =n);
-    builder.addDoubleProperty("Robot Pose Y", () -> m_yRobotPose , (n) -> m_yRobotPose = n);
+    //
+    builder.addDoubleProperty("Robot Pose X", () -> m_xRobotPose, (n) -> m_xRobotPose = n);
+    builder.addDoubleProperty("Robot Pose Y", () -> m_yRobotPose, (n) -> m_yRobotPose = n);
+    builder.addDoubleProperty("Goal X", () -> m_goalPose.getX(), null);
+    builder.addDoubleProperty("Goal Y", () -> m_goalPose.getY(), null);
+    builder.addDoubleProperty("Goal rotation", () -> m_goalPose.getRotation().getDegrees(), null);
   }
 
 

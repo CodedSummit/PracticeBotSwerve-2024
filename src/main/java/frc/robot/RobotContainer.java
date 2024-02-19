@@ -43,6 +43,7 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final SendableChooser<Command> autoChooser;
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -54,7 +55,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     // make the chasetag command
-    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led);
+   // Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem);
     
     configureBindings();
 
@@ -100,7 +101,7 @@ public class RobotContainer {
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
     m_driverController.povDown().onTrue(new InstantCommand(() ->m_led.setStripBlue()));
-    m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripPurple()));
+    m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripRed()));
 
   }
 
