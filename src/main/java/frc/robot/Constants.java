@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -124,6 +128,14 @@ public static final class AutoConstants {
           new TrapezoidProfile.Constraints(
                   kMaxAngularSpeedRadiansPerSecond,
                   kMaxAngularAccelerationRadiansPerSecondSquared);
+}
+
+public static final class VisionConstants {
+  public static final String kFrontCamName ="FrontCam";
+  /**
+     * Physical location of the camera on the robot, relative to the camera.
+     */
+  public static final Transform2d kFrontCamToRobot = new Transform2d(new Translation2d(inchesToMeters(-12.75), 0.0), new Rotation2d(0.0));
 }
 
 }
