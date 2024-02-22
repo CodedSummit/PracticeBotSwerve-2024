@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 import java.util.Map;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
@@ -21,6 +21,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SetWheelAlignment;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -63,9 +64,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final ADIS16470_IMU gyro = new ADIS16470_IMU();
 
-    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,
-            new Rotation2d(0), getModulePositions());
+    private final SwerveDrivePoseEstimator odometer = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
+            new Rotation2d(0), getModulePositions(), new Pose2d());
 
+    private VisionPoseEstimationSubsystem m_VisionPoseEstimationSubsystem;
     private double yTiltOffset;
 
     private MedianFilter yFilter = new MedianFilter(10);
@@ -77,6 +79,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
     public SwerveSubsystem() {
+        this.initialize();
+    }
+
+    public SwerveSubsystem( VisionPoseEstimationSubsystem vPoseEstimation){
+        m_VisionPoseEstimationSubsystem = vPoseEstimation;
+        this.initialize();
+    }
+
+    public void initialize() {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -97,7 +108,7 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveTab.add("Back Left", backLeft)
             .withSize(2,2)
             .withPosition(2, 2);
-
+ 
         swerveTab.add("Set Wheel Offsets", new SetWheelAlignment(this));
         
         turboSpeedFactor = swerveTab.add("Turbo Percentage", 0.9)
@@ -187,7 +198,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return odometer.getPoseMeters();
+        return odometer.getEstimatedPosition();
     }
     private void resetPose(Pose2d pose2d1) {
         resetOdometry(pose2d1);
@@ -207,11 +218,28 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        odometer.update(getRotation2d(), getModulePositions());
         
+        updatePose();
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
+        SmartDashboard.putNumber("PoseX", getPose().getX() );
+        SmartDashboard.putNumber("PoseY", getPose().getY() );
+        
 
+    }
+
+    public void updatePose(){
+       
+        if (VisionConstants.kUseVisionPoseEstimation){
+            var pose = m_VisionPoseEstimationSubsystem.getEstimatedGlobalPose(getPose());
+            if (pose.isPresent()) {
+                var pose2d = pose.get().estimatedPose.toPose2d();
+                odometer.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+                System.out.println(" Updated pose with vision.  x:"+pose2d.getX()+ "   y: "+pose2d.getY());
+            }
+        }
+ 
+        odometer.update(getRotation2d(), getModulePositions());
     }
 
     public void stopModules() {

@@ -7,8 +7,11 @@ package frc.robot;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -133,9 +136,13 @@ public static final class AutoConstants {
 public static final class VisionConstants {
   public static final String kFrontCamName ="FrontCam";
   /**
-     * Physical location of the camera on the robot, relative to the camera.
+     * Physical location of the camera on the robot, relative to the Robot.
      */
-  public static final Transform2d kFrontCamToRobot = new Transform2d(new Translation2d(inchesToMeters(-12.75), 0.0), new Rotation2d(0.0));
+
+  public static final Transform3d kRobotToFrontCam = new Transform3d(new Translation3d(inchesToMeters(12.75), 0.0,0.0), new Rotation3d(0.0, 0, 0));
+  public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(inchesToMeters(12.75), 0.0), new Rotation2d(0.0, 0));
+  public static final boolean kUseVisionPoseEstimation = true;
+
 }
 
 }
