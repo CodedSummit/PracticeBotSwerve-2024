@@ -229,16 +229,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void updatePose(){
-       
-        if (VisionConstants.kUseVisionPoseEstimation){
-            var pose = m_VisionPoseEstimationSubsystem.getEstimatedGlobalPose(getPose());
-            if (pose.isPresent()) {
-                var pose2d = pose.get().estimatedPose.toPose2d();
-                odometer.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
-                System.out.println(" Updated pose with vision.  x:"+pose2d.getX()+ "   y: "+pose2d.getY());
-            }
-        }
- 
+        m_VisionPoseEstimationSubsystem.updatePoseWithVision(odometer);
         odometer.update(getRotation2d(), getModulePositions());
     }
 

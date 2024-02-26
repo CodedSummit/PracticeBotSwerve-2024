@@ -12,6 +12,8 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
@@ -48,6 +50,26 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
       m_photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
       return m_photonPoseEstimator.update();
+  }
+
+  /**
+   * Adds vision esimtates to the provided pose esimator
+   * 
+   * @param poseEstimator
+   */
+
+  public void updatePoseWithVision(SwerveDrivePoseEstimator poseEstimator) {
+
+    if (VisionConstants.kUseVisionPoseEstimation) {
+      // TODO: Update to get vision info from each camera and add to the poseEstimator
+      var pose = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+      if (pose.isPresent()) {
+        var pose2d = pose.get().estimatedPose.toPose2d();
+        poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+        System.out.println(" Updated pose with vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
+      }
+    }
+
   }
 
 }
