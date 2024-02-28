@@ -12,9 +12,11 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 /**
@@ -27,6 +29,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   PhotonCamera m_frontCamera = new PhotonCamera(VisionConstants.kFrontCamName);
   AprilTagFieldLayout m_CompetitionAprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
   PhotonPoseEstimator m_photonPoseEstimator=null;
+  private boolean m_visionEnabled = false;
 
   /** Creates a new VisionPoseEstimationSubsystem. */
   public VisionPoseEstimationSubsystem() {
@@ -41,7 +44,12 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
   }
 
- 
+  public void initialize() {
+     ShuffleboardTab vTab = Shuffleboard.getTab("Vision");
+     vTab.add("Enable vision ", m_visionEnabled)
+     .withSize(1,1);
+
+  }
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
@@ -60,7 +68,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
   public void updatePoseWithVision(SwerveDrivePoseEstimator poseEstimator) {
 
-    if (VisionConstants.kUseVisionPoseEstimation) {
+    if (getVisionEnable()) {
       // TODO: Update to get vision info from each camera and add to the poseEstimator
       var pose = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
@@ -70,6 +78,18 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
       }
     }
 
+  }
+
+  public void initSendable(SendableBuilder builder) {
+    builder.addBooleanProperty("Vision Location Enabled", this::getVisionEnable, this::enableVisionPose);
+  }
+
+  public boolean getVisionEnable(){
+    return m_visionEnabled;
+  }
+  public boolean enableVisionPose(boolean b) {
+    m_visionEnabled = b;
+    return m_visionEnabled;
   }
 
 }
