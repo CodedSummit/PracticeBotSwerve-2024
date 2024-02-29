@@ -3,13 +3,9 @@ package frc.robot.commands;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import static edu.wpi.first.math.util.Units.inchesToMeters;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -17,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -26,8 +23,12 @@ public class ChaseTagCommand extends Command {
    
   // TODO:  Make a constructor that takes the TAG number, the TAG_TO_GOAL offsets, and the CAMERA_TO_ROBOT offsets
   
-  private static final int TAG_TO_CHASE = 1;
-  private static final Transform2d TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
+  // Tranforms from the tag associated with the target to the desired robot position
+  private static final Transform2d AMP_TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
+  private static final Transform2d SPEAKER_TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
+  private static final Transform2d STAGE_TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
+
+  public  enum FieldGoals {AMP, SPEAKER, STAGE, NONE};
    
   private static final double STALE_TARGET_TIME = 2.0;   // how long to wait (sec.) after losing target before giving up
   private static final double DIFF_MAX_THRESHOLD = 0.50;   // Translation difference - in meters
@@ -45,7 +46,10 @@ public class ChaseTagCommand extends Command {
   private double m_xRobotPose;
   private double m_yRobotPose;
   private Timer m_TargetLastSeen = null;
- 
+  private int m_tagToChase = 0;
+  private Transform2d m_tagToGoalXform = null;
+  private boolean m_boardBuilt= false;
+  
   private DriveToPoseCommand m_driveToPoseCmd = null;
 
   public ChaseTagCommand(
@@ -56,28 +60,42 @@ public class ChaseTagCommand extends Command {
     this.m_drivetrainSubsystem = drivetrainSubsystem;
     this.m_driveToPoseCmd = new DriveToPoseCommand(null, drivetrainSubsystem);
     this.m_LedSubsystem = LEDSubsystem;
-
+   
     addRequirements(visionSubsystem);
   }
 
   @Override
   public void initialize() {
-    m_goalPose = null;
+    m_goalPose = new Pose2d();
     m_lastTarget = null;
     
     m_driveToPoseCmd.initialize();
     m_driveToPoseCmd.updateGoal(null);
-    setupShuffleboard();
+    
     m_TargetLastSeen = new Timer();
-    }
+    setFieldGoal(FieldGoals.NONE);
+    setupShuffleboard();
+  }
+  
+
   private void setupShuffleboard() {
-    ShuffleboardTab vision = Shuffleboard.getTab("Vision");
+
+    if (!m_boardBuilt) {
+      ShuffleboardTab vision = Shuffleboard.getTab("Vision");
+      vision.add("Set to AMP", new InstantCommand(() -> this.setFieldGoal(FieldGoals.AMP)));
+      vision.add("Set to Stage", new InstantCommand(() -> this.setFieldGoal(FieldGoals.STAGE)));
+      vision.add("Set to Speaker", new InstantCommand(() -> this.setFieldGoal(FieldGoals.SPEAKER)));
+      vision.add("Set to None", new InstantCommand(() -> this.setFieldGoal(FieldGoals.NONE)));
+      vision.add("ChaseTag", this).withSize(2,2);
+      m_boardBuilt = true;
+    }
   }
 
+  
   @Override
   public void execute() {
       var robotPose = m_drivetrainSubsystem.getPose();
-      var target = m_VisionSubsystem.getTargetForTag(TAG_TO_CHASE);
+      var target = m_VisionSubsystem.getTargetForTag(m_tagToChase);
 
       if (target == null && m_lastTarget == null){
         return; //  No target yet, and have not seen one yet.  Come back later.....
@@ -106,12 +124,13 @@ public class ChaseTagCommand extends Command {
         Pose2d targetPose = cameraPose.transformBy(transform);
 
         // Transform the tag's pose to set our goal
-        m_goalPose = targetPose.transformBy(TAG_TO_GOAL);
+        m_goalPose = targetPose.transformBy(m_tagToGoalXform);
         m_driveToPoseCmd.updateGoal(m_goalPose);  
         if (!m_driveToPoseCmd.isScheduled()) m_driveToPoseCmd.schedule();
       }
   }
 
+ 
   /**
    *  Returns true if the newTarget is "significantly" different from lastTarget
    */
@@ -161,13 +180,42 @@ public boolean isFinished(){
 
   public void initSendable(SendableBuilder builder) {
     //
-    builder.addDoubleProperty("Robot Pose X", () -> m_xRobotPose, (n) -> m_xRobotPose = n);
-    builder.addDoubleProperty("Robot Pose Y", () -> m_yRobotPose, (n) -> m_yRobotPose = n);
+    builder.addDoubleProperty("Robot Pose X", () -> m_xRobotPose, null);
+    builder.addDoubleProperty("Robot Pose Y", () -> m_yRobotPose, null);
     builder.addDoubleProperty("Goal X", () -> m_goalPose.getX(), null);
     builder.addDoubleProperty("Goal Y", () -> m_goalPose.getY(), null);
     builder.addDoubleProperty("Goal rotation", () -> m_goalPose.getRotation().getDegrees(), null);
+    builder.addIntegerProperty("Tag to chase", () -> getTagToChase(), null);
   }
 
+  public Integer getTagToChase() {
+    return m_tagToChase;
+  }
+
+  /**
+   * Setup the internal settings for the chosen goal
+   * @param goal
+   */
+  public void setFieldGoal(FieldGoals goal){
+     switch (goal) {
+      case AMP:
+        m_tagToChase = VisionConstants.kAmpTagID;
+        m_tagToGoalXform = AMP_TAG_TO_GOAL;
+        break;
+      case SPEAKER:
+        m_tagToChase = VisionConstants.kSpeakerTagID;
+        m_tagToGoalXform = SPEAKER_TAG_TO_GOAL;
+        break;
+      case STAGE:
+        m_tagToChase = VisionConstants.kStageTagID;
+        m_tagToGoalXform = STAGE_TAG_TO_GOAL;
+        break;
+      case NONE:
+        m_tagToChase = 0;
+        break;
+     }
+     System.out.println("Chose tag:" + goal);
+  }
 
 }
 

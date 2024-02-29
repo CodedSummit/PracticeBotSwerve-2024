@@ -141,7 +141,10 @@ public static final class VisionConstants {
 
   public static final Transform3d kRobotToFrontCam = new Transform3d(new Translation3d(inchesToMeters(12.75), 0.0,0.0), new Rotation3d(0.0, 0, 0));
   public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(inchesToMeters(12.75), 0.0), new Rotation2d(0.0, 0));
-  public static final boolean kUseVisionPoseEstimation = true;
+  // Update these tag vals based on the alliance membership
+  public static final int kAmpTagID = 6;
+  public static final int kStageTagID = 16;
+  public static final int kSpeakerTagID = 7;
 
 }
 
