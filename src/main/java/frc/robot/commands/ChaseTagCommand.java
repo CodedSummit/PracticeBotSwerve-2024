@@ -73,7 +73,6 @@ public class ChaseTagCommand extends Command {
     m_driveToPoseCmd.updateGoal(null);
     
     m_TargetLastSeen = new Timer();
-    setFieldGoal(FieldGoals.NONE);
     setupShuffleboard();
   }
   

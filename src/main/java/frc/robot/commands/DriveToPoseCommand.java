@@ -30,8 +30,8 @@ public class DriveToPoseCommand extends Command {
   
   private final SwerveSubsystem m_drivetrainSubsystem;
   
-  private final ProfiledPIDController m_xController = new ProfiledPIDController(4, 0, 0, X_CONSTRAINTS);
-  private final ProfiledPIDController m_yController = new ProfiledPIDController(4, 0, 0, Y_CONSTRAINTS);
+  private final ProfiledPIDController m_xController = new ProfiledPIDController(4, 1, 0, X_CONSTRAINTS);
+  private final ProfiledPIDController m_yController = new ProfiledPIDController(4, 1, 0, Y_CONSTRAINTS);
   private final ProfiledPIDController m_omegaController = new ProfiledPIDController(2, 0, 0, OMEGA_CONSTRATINTS);
 
   private Pose2d m_goalPose;
