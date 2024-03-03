@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -135,12 +136,18 @@ public static final class AutoConstants {
 
 public static final class VisionConstants {
   public static final String kFrontCamName ="FrontCam";
+  public static final String kLeftCamName ="LeftCam";
+  public static final String kRightCamName ="RightCam";
   /**
      * Physical location of the camera on the robot, relative to the Robot.
      */
 
   public static final Transform3d kRobotToFrontCam = new Transform3d(new Translation3d(inchesToMeters(12.75), 0.0,0.0), new Rotation3d(0.0, 0, 0));
   public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(inchesToMeters(12.75), 0.0), new Rotation2d(0.0, 0));
+  public static final Transform3d kRobotToLeftCam = 
+      new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(90)));
+  public static final Transform3d kRobotToRightCam = 
+      new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(-12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(-90)));
   // Update these tag vals based on the alliance membership
   public static final int kAmpTagID = 6;
   public static final int kStageTagID = 16;
