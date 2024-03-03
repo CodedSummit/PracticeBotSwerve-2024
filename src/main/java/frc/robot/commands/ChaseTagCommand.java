@@ -1,6 +1,10 @@
 package frc.robot.commands;
 
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,6 +13,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -28,7 +33,36 @@ public class ChaseTagCommand extends Command {
   private static final Transform2d SPEAKER_TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
   private static final Transform2d STAGE_TAG_TO_GOAL = new Transform2d(new Translation2d(1, 0), Rotation2d.fromDegrees(180.0));
 
+  private static final Map<FieldGoals, Transform2d> TAG_TO_GOAL_XFORMS;
+  static {
+    Map<FieldGoals, Transform2d> aMap = new HashMap<>();
+    aMap.put(FieldGoals.NONE, AMP_TAG_TO_GOAL);
+    aMap.put(FieldGoals.AMP, AMP_TAG_TO_GOAL);
+    aMap.put(FieldGoals.SPEAKER, SPEAKER_TAG_TO_GOAL);
+    aMap.put(FieldGoals.STAGE, STAGE_TAG_TO_GOAL);
+    TAG_TO_GOAL_XFORMS = Collections.unmodifiableMap(aMap);
+  }
+
   public  enum FieldGoals {AMP, SPEAKER, STAGE, NONE};
+  private static final Map<FieldGoals,Integer> BLUE_GOALS;
+  static {
+    Map<FieldGoals,Integer> aMap = new HashMap<>();
+    aMap.put(FieldGoals.NONE, 0);
+    aMap.put(FieldGoals.AMP, VisionConstants.kBAmpTagID);
+    aMap.put(FieldGoals.SPEAKER, VisionConstants.kBSpeakerTagID);
+    aMap.put(FieldGoals.STAGE, VisionConstants.kBStageTagID);
+    BLUE_GOALS = Collections.unmodifiableMap(aMap);
+  }
+private static final Map<FieldGoals,Integer> RED_GOALS;
+  static {
+    Map<FieldGoals,Integer> aMap = new HashMap<>();
+    aMap.put(FieldGoals.NONE, 0);
+    aMap.put(FieldGoals.AMP, VisionConstants.kRAmpTagID);
+    aMap.put(FieldGoals.SPEAKER, VisionConstants.kRSpeakerTagID);
+    aMap.put(FieldGoals.STAGE, VisionConstants.kRStageTagID);
+    RED_GOALS = Collections.unmodifiableMap(aMap);
+  }
+
    
   private static final double STALE_TARGET_TIME = 2.0;   // how long to wait (sec.) after losing target before giving up
   private static final double DIFF_MAX_THRESHOLD = 0.50;   // Translation difference - in meters
@@ -196,24 +230,16 @@ public boolean isFinished(){
    * @param goal
    */
   public void setFieldGoal(FieldGoals goal){
-     switch (goal) {
-      case AMP:
-        m_tagToChase = VisionConstants.kAmpTagID;
-        m_tagToGoalXform = AMP_TAG_TO_GOAL;
-        break;
-      case SPEAKER:
-        m_tagToChase = VisionConstants.kSpeakerTagID;
-        m_tagToGoalXform = SPEAKER_TAG_TO_GOAL;
-        break;
-      case STAGE:
-        m_tagToChase = VisionConstants.kStageTagID;
-        m_tagToGoalXform = STAGE_TAG_TO_GOAL;
-        break;
-      case NONE:
-        m_tagToChase = 0;
-        break;
-     }
-     System.out.println("Chose tag:" + goal);
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Red){
+         m_tagToChase = RED_GOALS.get(goal);
+      } else {
+         m_tagToChase = BLUE_GOALS.get(goal);
+      }
+      m_tagToGoalXform = TAG_TO_GOAL_XFORMS.get(goal);
+    }
+    System.out.println("Chose tag:" + goal);
   }
 
 }
