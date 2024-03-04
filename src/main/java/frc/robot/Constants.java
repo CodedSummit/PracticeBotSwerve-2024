@@ -148,10 +148,13 @@ public static final class VisionConstants {
       new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(90)));
   public static final Transform3d kRobotToRightCam = 
       new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(-12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(-90)));
-  // Update these tag vals based on the alliance membership
-  public static final int kAmpTagID = 6;
-  public static final int kStageTagID = 16;
-  public static final int kSpeakerTagID = 7;
+  // Use appropriate tag vals based on the alliance membership (B-Blue, R- Red)
+  public static final int kBAmpTagID = 6;
+  public static final int kBStageTagID = 16;
+  public static final int kBSpeakerTagID = 7;
+  public static final int kRAmpTagID = 5;
+  public static final int kRStageTagID = 11;
+  public static final int kRSpeakerTagID = 4;
 
 }
 
