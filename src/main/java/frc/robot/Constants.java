@@ -158,4 +158,25 @@ public static final class VisionConstants {
 
 }
 
+public static final class ArmConstants {
+  // Various constants for the Arm
+  // TODO - set the real values
+  //
+  public static final double kMaxArmAngleDeg = 0.0;
+  public static final double kMinArmAngleDeg = 0.0;
+  public static double kMaxVelocityRadPerSecond = 0.0;;
+  public static double kMaxAccelerationRadPerSecSquared = 0.0;
+  public static double kP = 0.0;
+  public static int kMotorPort = 0;
+  public static int[] kEncoderPorts = new int[] {28, 29};;
+  public static double kSVolts = 0.0;
+  public static double kGVolts = 0.0;
+  public static double kVVoltSecondPerRad =0.0;
+  public static double kAVoltSecondSquaredPerRad = 0.0;
+  public static double kArmBumpIncrementRad = (Math.toRadians(1.0));
+  // The offset of the arm from the horizontal in its neutral position,
+  // measured from the horizontal
+  public static final double kArmOffsetRads = 0.5;
+
+}
 }
