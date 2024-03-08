@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
@@ -13,7 +12,6 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 
 /**
@@ -24,7 +22,9 @@ import frc.robot.Constants.ArmConstants;
  * This angle change position will need a PID controller. Uses FeedForward in
  * addition to PID control
  * This will likely have some preset positions, but also need to use controller
- * buttons to feed forward/backward slowly to adjust.
+ * buttons to feed forward/backward slowly to adjust (see Bump functions).
+ * 
+ * Must be able to feed a Note either direction - forward into an Amp, Backward into the Stage Trap at the end of match
  * 
  * see example at
  * https://github.com/wpilibsuite/allwpilib/tree/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armbot

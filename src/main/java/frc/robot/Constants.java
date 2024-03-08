@@ -177,6 +177,26 @@ public static final class ArmConstants {
   // The offset of the arm from the horizontal in its neutral position,
   // measured from the horizontal
   public static final double kArmOffsetRads = 0.5;
+  public static final int kArmCanbusID = 0;
 
 }
+
+public static final class ShooterConstants {
+  // Various constants for the Shooter
+  // TODO - set the real values
+
+  public static final int kShooterCanbusID = 0;
+  public static double kShooterSpeed = 0.0;
+}
+
+
+public static final class IntakeConstants {
+  // Various constants for the Intake subsystem
+  // TODO - set the real values
+
+  public static final int kIntakeCanbusID = 0;
+  public static double kShooterSpeed = 0.0;
+  public static double intakeSpeed;
+}
+
 }
