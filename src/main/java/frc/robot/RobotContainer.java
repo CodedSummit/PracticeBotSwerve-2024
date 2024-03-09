@@ -9,10 +9,12 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -29,7 +31,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem();
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
 
   private SwerveJoystickCmd swerveJoystickCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
@@ -40,6 +43,7 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final SendableChooser<Command> autoChooser;
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -51,9 +55,13 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     // make the chasetag command
+
     Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led);
     
     configureBindings();
+
+    //   for debugging only - make a default chase command
+   // CommandScheduler.getInstance().setDefaultCommand(m_visionSubsystem, placeholderChaser);
 
     // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -62,6 +70,7 @@ public class RobotContainer {
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("poseestimator", m_visionPoseEstimationSubsystem);
 
   }
 

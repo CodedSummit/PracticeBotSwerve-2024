@@ -54,11 +54,11 @@ setStripColor(255,0,0);
   }
 
   public void setStripOrange(){
-    setStripColor(255,125,0);
+    setStripColor(255,75,0);
   }
 
   public void setStripYellow(){
-    setStripColor(255,255,0);
+    setStripColor(255,125,0);
   }
 
   public void setStripGreen(){

@@ -4,7 +4,15 @@
 
 package frc.robot;
 
+import static edu.wpi.first.math.util.Units.degreesToRadians;
+import static edu.wpi.first.math.util.Units.inchesToMeters;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -124,6 +132,30 @@ public static final class AutoConstants {
           new TrapezoidProfile.Constraints(
                   kMaxAngularSpeedRadiansPerSecond,
                   kMaxAngularAccelerationRadiansPerSecondSquared);
+}
+
+public static final class VisionConstants {
+  public static final String kFrontCamName ="FrontCam";
+  public static final String kLeftCamName ="LeftCam";
+  public static final String kRightCamName ="RightCam";
+  /**
+     * Physical location of the camera on the robot, relative to the Robot.
+     */
+
+  public static final Transform3d kRobotToFrontCam = new Transform3d(new Translation3d(inchesToMeters(12.75), 0.0,0.0), new Rotation3d(0.0, 0, 0));
+  public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(inchesToMeters(12.75), 0.0), new Rotation2d(0.0, 0));
+  public static final Transform3d kRobotToLeftCam = 
+      new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(90)));
+  public static final Transform3d kRobotToRightCam = 
+      new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(-12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(-90)));
+  // Use appropriate tag vals based on the alliance membership (B-Blue, R- Red)
+  public static final int kBAmpTagID = 6;
+  public static final int kBStageTagID = 16;
+  public static final int kBSpeakerTagID = 7;
+  public static final int kRAmpTagID = 5;
+  public static final int kRStageTagID = 11;
+  public static final int kRSpeakerTagID = 4;
+
 }
 
 }
