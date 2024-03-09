@@ -5,13 +5,9 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
 import frc.robot.commands.ChaseTagCommand;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.NothingCommand;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.AddressableLedSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -22,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 
 /**
@@ -54,7 +51,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     // make the chasetag command
-    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem);
+    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led);
     
     configureBindings();
 
@@ -83,7 +80,7 @@ public class RobotContainer {
 
     m_driverController.y().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-    m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem));
+    m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
     //     Pressed is robot oriented
@@ -102,6 +99,8 @@ public class RobotContainer {
     m_driverController.povDown().onTrue(new InstantCommand(() ->m_led.setStripBlue()));
     m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripPurple()));
 
+    // temporarily do while true so releasing button stops the path
+    m_driverController.povLeft().whileTrue(swerveSubsystem.followPathCommand("ShortRun"));
   }
 
     public void runStartupCalibration(){

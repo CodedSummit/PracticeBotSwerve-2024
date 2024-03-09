@@ -20,11 +20,14 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.SetWheelAlignment;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -251,7 +254,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     }
 
-    private ChassisSpeeds getRobotRelativeSpeeds() {
+    public ChassisSpeeds getRobotRelativeSpeeds() {
         return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
 
     }
@@ -262,6 +265,37 @@ public class SwerveSubsystem extends SubsystemBase {
 
          // 6. Output each module states to wheels
          setModuleStates(moduleStates);
+    }
+
+    public Command followPathCommand(String pathName) {
+        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+
+        System.out.println("  Generating path for file:"+pathName);
+        return new FollowPathHolonomic(
+                path,
+                this::getPose, // Robot pose supplier
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(4.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(2.0, 0.0, 0.0), // Rotation PID constants
+                        4.6, // Max module speed, in m/s
+                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
     }
 
 }
