@@ -23,8 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SetWheelAlignment;
+import frc.robot.commands.ZeroOdometry;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
@@ -135,6 +135,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         swerveTab.add("Field", m_field);
 
+        swerveTab.add(new ZeroOdometry(this));
+
 // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
@@ -213,6 +215,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
+        gyro.setGyroAngleZ(pose.getRotation().getDegrees());
     }
     public void resetOdometry(){
         resetOdometry(new Pose2d());
@@ -297,7 +300,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(4.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(2.0, 0.0, 0.0), // Rotation PID constants
-                        4.6, // Max module speed, in m/s
+                        0.5, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),

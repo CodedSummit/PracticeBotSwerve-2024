@@ -147,7 +147,7 @@ public static final class VisionConstants {
   public static final Transform3d kRobotToLeftCam = 
       new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(90)));
   public static final Transform3d kRobotToRightCam = 
-      new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(-12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(-90)));
+      new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(-12.5),inchesToMeters(12.0)), new Rotation3d(degreesToRadians(-30.0), 0, degreesToRadians(-90)));
   // Use appropriate tag vals based on the alliance membership (B-Blue, R- Red)
   public static final int kBAmpTagID = 6;
   public static final int kBStageTagID = 16;
