@@ -68,6 +68,7 @@ public class SwerveModule implements Sendable {
         turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
         turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
+        turningPidController.setTolerance(0.0046*10);
         turningPidController.enableContinuousInput(0, 2 * Math.PI);
         loadPreferences(); //to set initial values from storage
         resetEncoders();
@@ -136,11 +137,11 @@ public class SwerveModule implements Sendable {
         state = SwerveModuleState.optimize(state, getState().angle);
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
 
-        if (Math.abs(state.speedMetersPerSecond) < 0.005) {
+        /*if (Math.abs(state.speedMetersPerSecond) < 0.005) {
             //driveTalonFX.set(ControlMode.PercentOutput, 0);
             driveTalonFX.set(0);
             return;
-        }
+        }*/
         driveTalonFX.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
     }
 

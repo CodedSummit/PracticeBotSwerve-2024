@@ -35,9 +35,12 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   PhotonPoseEstimator m_leftCamPhotonPoseEstimator = null;
   PhotonPoseEstimator m_rightCamPhotonPoseEstimator = null;
   private boolean m_visionEnabled = false;
+  AddressableLedSubsystem m_led;
 
   /** Creates a new VisionPoseEstimationSubsystem. */
-  public VisionPoseEstimationSubsystem() {
+  public VisionPoseEstimationSubsystem(AddressableLedSubsystem led) {
+    
+    m_led = led;
     // Construct PhotonPoseEstimators
      m_frontCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 
       PoseStrategy.AVERAGE_BEST_TARGETS, m_frontCamera, VisionConstants.kRobotToFrontCam);
@@ -83,12 +86,14 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
   public void updatePoseWithVision(SwerveDrivePoseEstimator poseEstimator) {
 
+    boolean received_vision_update = false;
     if (getVisionEnable()) {
       
       var pose = getLCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+        received_vision_update = true;
         System.out.println(" Updated pose with left cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
       }
       pose = getRCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
@@ -96,8 +101,14 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
         var pose2d = pose.get().estimatedPose.toPose2d();
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
         System.out.println(" Updated pose with right cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
+        received_vision_update = true;
       }
 
+    }
+    if(received_vision_update){
+      m_led.setStripGreen();
+    } else {
+      m_led.setStripOff();
     }
 
   }
