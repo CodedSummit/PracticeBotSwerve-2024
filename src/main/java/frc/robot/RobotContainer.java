@@ -11,6 +11,9 @@ import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,7 +23,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindHolonomic;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 
 /**
@@ -31,12 +38,12 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem();
+  private final AddressableLedSubsystem m_led = new AddressableLedSubsystem(20,9);
+  private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem(m_led);
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
 
   private SwerveJoystickCmd swerveJoystickCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
-  private final AddressableLedSubsystem m_led = new AddressableLedSubsystem(20,9);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -89,6 +96,9 @@ public class RobotContainer {
 
     m_driverController.y().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
+    Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
+    m_driverController.a().whileTrue(navToA);
+
     m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
@@ -117,6 +127,36 @@ public class RobotContainer {
       new CalibrateArmCommand(armSubsystem).schedule();
     }*/
   }
+
+  /**
+   * @param targetPose
+   * @return
+   */
+  public Command makeNavCommand(Pose2d targetPose){
+
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+            0.5, 4.0,
+            Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+    // See the "Follow a single path" example for more info on what gets passed here
+    Command pathfindingCommand = AutoBuilder.pathfindToPose(
+        targetPose,
+        constraints,
+        0.0, // Goal end velocity in meters/sec
+        0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+    );
+
+    return pathfindingCommand;
+  }
+
+  public Command makePathCommand(String pathName){
+      // Load the path you want to follow using its name in the GUI
+      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+
+      // Create a path following command using AutoBuilder. This will also trigger event markers.
+      return AutoBuilder.followPath(path);
+  };
 
   public void loadPreferences(){
     swerveSubsystem.loadPreferences();
