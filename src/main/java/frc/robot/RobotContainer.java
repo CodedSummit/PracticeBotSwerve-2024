@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ChaseTagCommand;
+import frc.robot.commands.DriveRotateToPiece;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -43,6 +44,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
 
   private SwerveJoystickCmd swerveJoystickCmd;
+  private DriveRotateToPiece driveRotateToPieceCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -60,6 +62,8 @@ public class RobotContainer {
       swerveSubsystem,
       m_driverController);
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
+
+    driveRotateToPieceCmd = new DriveRotateToPiece(swerveSubsystem, m_driverController, m_visionSubsystem);
 
     // make the chasetag command
 
@@ -96,8 +100,8 @@ public class RobotContainer {
 
     m_driverController.y().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-    Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
-    m_driverController.a().whileTrue(navToA);
+    //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
+    m_driverController.a().whileTrue(driveRotateToPieceCmd);
 
     m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
