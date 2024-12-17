@@ -12,7 +12,8 @@ import frc.robot.Constants.VisionConstants;
 
 public class VisionSubsystem extends SubsystemBase {
  
-  PhotonCamera m_frontCamera = new PhotonCamera(VisionConstants.kFrontCamName);
+  PhotonCamera m_frontCamera = new PhotonCamera("ARCamFront");
+  PhotonCamera m_colorCamera = new PhotonCamera("ColorCamFront");
   
   /** Creates a new VisionSubsystem. */
   public VisionSubsystem() {}
@@ -60,4 +61,22 @@ public class VisionSubsystem extends SubsystemBase {
     }
     return target;
   }
+
+
+  public boolean hasGamePieceTarget(){
+    return m_colorCamera.getLatestResult().hasTargets();
+  }
+
+  public double getGamePieceTargetYaw(){
+    return m_colorCamera.getLatestResult().getBestTarget().getYaw();
+  }
+
+  public double getGamePieceTargetPitch(){
+    return m_colorCamera.getLatestResult().getBestTarget().getPitch();
+  }
+
+  public PhotonTrackedTarget getGamePieceTarget(){
+    return m_colorCamera.getLatestResult().getBestTarget();
+  }
+
 }
