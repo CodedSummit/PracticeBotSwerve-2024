@@ -123,7 +123,7 @@ public class RobotContainer {
     m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripPurple()));
 
     // temporarily do while true so releasing button stops the path
-    m_driverController.povLeft().whileTrue(swerveSubsystem.followPathCommand("ShortRun"));
+//    m_driverController.povLeft().whileTrue(swerveSubsystem.followPathCommand("ShortRun"));
   }
 
     public void runStartupCalibration(){
@@ -136,6 +136,7 @@ public class RobotContainer {
    * @param targetPose
    * @return
    */
+  /* 
   public Command makeNavCommand(Pose2d targetPose){
 
     // Create the constraints to use while pathfinding
@@ -151,8 +152,8 @@ public class RobotContainer {
         0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
     );
 // comment
-    return pathfindingCommand;
-  }
+    return pathfindingCommand; 
+  }*/
 
   public Command makePathCommand(String pathName) throws Exception {
       // Load the path you want to follow using its name in the GUI

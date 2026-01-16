@@ -136,7 +136,7 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveTab.add("Field", m_field);
 
         swerveTab.add(new ZeroOdometry(this));
-
+/* 
 // Configure AutoBuilder last
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
@@ -162,7 +162,7 @@ public class SwerveSubsystem extends SubsystemBase {
               return false;
             },
             this // Reference to this subsystem to set requirements
-    );
+    );*/
 
 
     }
@@ -287,7 +287,7 @@ public class SwerveSubsystem extends SubsystemBase {
          // 6. Output each module states to wheels
          setModuleStates(moduleStates);
     }
-
+/*
     public Command followPathCommand(String pathName) {
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
@@ -317,6 +317,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
-    }
+    }*/
 
 }

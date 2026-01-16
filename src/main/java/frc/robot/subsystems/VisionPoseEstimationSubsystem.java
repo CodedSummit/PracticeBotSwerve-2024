@@ -10,6 +10,8 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -43,11 +45,11 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     m_led = led;
     // Construct PhotonPoseEstimators
      m_frontCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 
-      PoseStrategy.AVERAGE_BEST_TARGETS, m_frontCamera, VisionConstants.kRobotToFrontCam);
+      PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToFrontCam);
      m_leftCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 
-      PoseStrategy.AVERAGE_BEST_TARGETS, m_leftCamera, VisionConstants.kRobotToLeftCam);
+      PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToLeftCam);
      m_rightCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 
-      PoseStrategy.AVERAGE_BEST_TARGETS, m_rightCamera, VisionConstants.kRobotToRightCam);
+      PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToRightCam);
   }
 
   @Override
@@ -68,13 +70,17 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   }
   
   private Optional<EstimatedRobotPose> getLCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-      m_leftCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-      return m_leftCamPhotonPoseEstimator.update();
+      m_frontCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+      PhotonPipelineResult result = m_frontCamera.getLatestResult();
+      return m_frontCamPhotonPoseEstimator.update(result);
   }
- private Optional<EstimatedRobotPose> getRCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-      m_rightCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-      return m_rightCamPhotonPoseEstimator.update();
-  }
+
+  private Optional<EstimatedRobotPose> getRCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    m_rightCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+    PhotonPipelineResult result = m_rightCamera.getLatestResult();
+    return m_rightCamPhotonPoseEstimator.update(result);
+}
+
 
   /**
    * Adds vision esimtates to the provided pose esimator.

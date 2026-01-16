@@ -64,8 +64,8 @@ public class SwerveModule implements Sendable {
 
         turningEncoder = turningMotor.getEncoder();
 
-        turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad);
-        turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
+//        turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad);
+//        turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
         turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
         turningPidController.setTolerance(0.0046*10);
@@ -84,7 +84,7 @@ public class SwerveModule implements Sendable {
     }
 
     public double getDrivePosition() {
-        return (driveTalonFX.getRotorPosition().getValue())
+        return (driveTalonFX.getRotorPosition().getValue()).magnitude()
             * ModuleConstants.kDriveEncoderRot2Meter;
     }
 
@@ -99,7 +99,7 @@ public class SwerveModule implements Sendable {
       }
 
     public double getDriveVelocity() {
-        return (driveTalonFX.getVelocity().getValue()) 
+        return (driveTalonFX.get()) 
          * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
     }
     public double getTurningVelocity() {
@@ -108,7 +108,7 @@ public class SwerveModule implements Sendable {
 
     public double getRawAbsoluteEncoderRad(){
         // returns the encoder value without applying the configured offset
-        double angle = directionDutyCycle.getAbsolutePosition();
+        double angle = directionDutyCycle.get();
         
         angle *= 2.0 * Math.PI; //convert 0-1 range into radians
 
@@ -116,7 +116,7 @@ public class SwerveModule implements Sendable {
     }
 
     public double getAbsoluteEncoderRad() {
-        double angle = directionDutyCycle.getAbsolutePosition();
+        double angle = directionDutyCycle.get();
         
         angle *= 2.0 * Math.PI; //convert 0-1 range into radians
 
