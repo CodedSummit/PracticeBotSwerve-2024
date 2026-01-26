@@ -147,7 +147,7 @@ public static final class VisionConstants {
      */
 
   public static final Transform3d kRobotToFrontCam = new Transform3d(new Translation3d(inchesToMeters(12.75), 0.0,0.0), new Rotation3d(0.0, 0, 0));
-  public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(inchesToMeters(12.75), 0.0), new Rotation2d(0.0, 0));
+  public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(inchesToMeters(12.75), 0.0), new Rotation2d(0.0, 0.01));
   public static final Transform3d kRobotToLeftCam = 
       new Transform3d(new Translation3d(inchesToMeters(0.0), inchesToMeters(12.5),inchesToMeters(12.0)), new Rotation3d(0.0, 0, degreesToRadians(90)));
   public static final Transform3d kRobotToRightCam = 

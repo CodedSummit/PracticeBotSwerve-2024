@@ -6,6 +6,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
@@ -24,7 +30,9 @@ import frc.robot.Constants.ShooterConstants;
  */
 public class NoteShooterSubsystem extends SubsystemBase {
 
-  private TalonFX m_motor = new TalonFX(ShooterConstants.kShooterCanbusID, "rio");
+//  private TalonFX m_motor = new TalonFX(ShooterConstants.kShooterCanbusID, "rio");
+  private SparkFlex m_motor = new SparkFlex(13, MotorType.kBrushless);
+
 
   /** Creates a new VisionSubsystem. */
   public NoteShooterSubsystem() {
@@ -48,5 +56,9 @@ public class NoteShooterSubsystem extends SubsystemBase {
 
   public void stop() {
     m_motor.set(0.0);
+  }
+
+  public Command SpinCommand(){
+    return new StartEndCommand(() -> this.spinUp(), () -> this.stop());
   }
 }

@@ -9,6 +9,7 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DriveRotateToPiece;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.AddressableLedSubsystem;
+import frc.robot.subsystems.NoteShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -43,6 +44,7 @@ public class RobotContainer {
   private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem(m_led);
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
 
+  private final NoteShooterSubsystem m_noteShooterSubsystem = new NoteShooterSubsystem();
   private SwerveJoystickCmd swerveJoystickCmd;
   private DriveRotateToPiece driveRotateToPieceCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
@@ -75,7 +77,7 @@ public class RobotContainer {
    // CommandScheduler.getInstance().setDefaultCommand(m_visionSubsystem, placeholderChaser);
 
     // Build an auto chooser. This will use Commands.none() as the default option.
-    autoChooser = AutoBuilder.buildAutoChooser();
+   autoChooser = AutoBuilder.buildAutoChooser();
 
     // Another option that allows you to specify the default auto by its name
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
@@ -102,7 +104,7 @@ public class RobotContainer {
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     m_driverController.a().whileTrue(driveRotateToPieceCmd);
-
+    m_driverController.b().whileTrue(m_noteShooterSubsystem.SpinCommand());
     m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented

@@ -31,7 +31,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 //import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 //import com.pathplanner.lib.config.ReplanningConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
@@ -67,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.BackRight.DriveAbsoluteEncoderReversed);
 
     private final ADIS16470_IMU gyro = new ADIS16470_IMU();
-
+    public RobotConfig config;
     private final SwerveDrivePoseEstimator odometer = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             new Rotation2d(0), getModulePositions(), new Pose2d());
 
@@ -136,9 +138,8 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveTab.add("Field", m_field);
 
         swerveTab.add(new ZeroOdometry(this));
-/* 
 // Configure AutoBuilder last
-    AutoBuilder.configureHolonomic(
+/*    AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
@@ -162,8 +163,36 @@ public class SwerveSubsystem extends SubsystemBase {
               return false;
             },
             this // Reference to this subsystem to set requirements
-    );*/
+    );
+*/
+try {
+    config = RobotConfig.fromGUISettings();
+ AutoBuilder.configure(
+                    this::getPose, // Robot pose supplier
+                    this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                    this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                    new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your
+                                                    // Constants class
+                            new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
+                            new PIDConstants(2.0, 0.0, 0.0), // Rotation PID constants
+                            0.02 // Control loop length in seconds
+                    ),
+                    config,
 
+                    () -> {
+                        var alliance = DriverStation.getAlliance(); // Boolean supplier that checks which alliance the
+                                                                    // bot is on
+                        if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                        }
+                        return false;
+                    },
+                    this);
+                    
+        } catch (Exception e) {
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
+        }
 
     }
 
