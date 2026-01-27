@@ -190,7 +190,7 @@ public static final class ShooterConstants {
   // TODO - set the real values
 
   public static final int kShooterCanbusID = 0;
-  public static double kShooterSpeed = 0.0;
+  public static double kShooterSpeed = -1.0;
 }
 
 
