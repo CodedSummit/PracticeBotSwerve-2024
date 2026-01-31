@@ -29,7 +29,11 @@ public class DriveRotateToPosition extends SwerveJoystickCmd {
             
       Pose2d robotPose = swerveSubsystem.getPose();
       Pose2d robotToTargetPose = turretSubsystem.getTargetPose().relativeTo(robotPose);
-      double angle = robotToTargetPose.getRotation().getDegrees()/35;
+      double rotInRad = Math.atan2(robotToTargetPose.getY(), robotToTargetPose.getX());
+      rotInRad = rotInRad - robotPose.getRotation().getRadians();  // take out the existing robot rotation
+      System.out.println("  Calculated rotation to target:"+rotInRad*180.0/Math.PI);
+      double angle = (rotInRad*180.0/Math.PI)/35;
+
       
       return MathUtil.clamp(angle, -1, 1);
     }
