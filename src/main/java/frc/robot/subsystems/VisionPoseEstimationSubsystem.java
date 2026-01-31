@@ -14,8 +14,12 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.BooleanEntry;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -27,6 +31,7 @@ import frc.robot.Constants.VisionConstants;
  *  the design pattern.
  * Uses the Left and Right cameras for estimations.
  */
+@Logged
 public class VisionPoseEstimationSubsystem extends SubsystemBase {
  
   PhotonCamera m_frontCamera = new PhotonCamera(VisionConstants.kFrontCamName);
@@ -37,6 +42,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   PhotonPoseEstimator m_leftCamPhotonPoseEstimator = null;
   PhotonPoseEstimator m_rightCamPhotonPoseEstimator = null;
   private boolean m_visionEnabled = false;
+  private BooleanEntry m_vision;
   AddressableLedSubsystem m_led;
 
   /** Creates a new VisionPoseEstimationSubsystem. */
@@ -50,6 +56,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
       PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToLeftCam);
      m_rightCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 
       PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToRightCam);
+      initialize();
   }
 
   @Override
@@ -62,7 +69,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
      ShuffleboardTab vTab = Shuffleboard.getTab("Vision");
      vTab.add("Enable vision ", m_visionEnabled)
      .withSize(1,1);
-
+NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    NetworkTable table = inst.getTable("datatable");
+    m_vision = table.getBooleanTopic("estimationEnable").getEntry(false);
+    m_vision.set(true);
   }
   @Override
   public void simulationPeriodic() {
@@ -72,6 +82,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   private Optional<EstimatedRobotPose> getFCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
       m_frontCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
       PhotonPipelineResult result = m_frontCamera.getLatestResult();
+      //System.out.println(result);
       return m_frontCamPhotonPoseEstimator.update(result);
   }
 
@@ -91,11 +102,13 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
    */
 
   public void updatePoseWithVision(SwerveDrivePoseEstimator poseEstimator) {
-
     boolean received_vision_update = false;
+ //   System.out.println(getVisionEnable());
+    
     if (getVisionEnable()) {
       
       var pose = getFCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+      //System.out.println(pose);
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
@@ -125,10 +138,11 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   }
 
   public boolean getVisionEnable(){
-    return m_visionEnabled;
+    return m_vision.getAsBoolean();
   }
   public boolean enableVisionPose(boolean b) {
     m_visionEnabled = b;
+    m_vision.set(b);
     return m_visionEnabled;
   }
 

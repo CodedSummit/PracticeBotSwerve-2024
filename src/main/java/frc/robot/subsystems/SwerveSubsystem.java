@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 import java.util.Map;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,6 +36,7 @@ import com.pathplanner.lib.config.RobotConfig;
 //import com.pathplanner.lib.config.ReplanningConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+@Logged
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
             DriveConstants.FrontLeft.DriveMotor,

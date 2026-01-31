@@ -1,0 +1,32 @@
+{
+  "NetworkTables": {
+    "transitory": {
+      "datatable": {
+        "open": true
+      },
+      "photonvision": {
+        "FrontCam": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Swerve/Field": "Field2d",
+      "/Shuffleboard/Swerve/Gyro data": "Gyro",
+      "/Shuffleboard/Swerve/Set Wheel Offsets": "Command",
+      "/Shuffleboard/Swerve/ZeroOdometry": "Command",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/PathPlanner": "Alerts",
+      "/SmartDashboard/PhotonAlerts": "Alerts"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "4175"
+  }
+}

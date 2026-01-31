@@ -15,6 +15,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -40,6 +41,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@Logged
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final AddressableLedSubsystem m_led = new AddressableLedSubsystem(20,9);
@@ -61,6 +63,7 @@ public class RobotContainer {
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
   public RobotContainer() {
     // Configure the trigger bindings
 
