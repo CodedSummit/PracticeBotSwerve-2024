@@ -69,7 +69,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
   
-  private Optional<EstimatedRobotPose> getLCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+  private Optional<EstimatedRobotPose> getFCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
       m_frontCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
       PhotonPipelineResult result = m_frontCamera.getLatestResult();
       return m_frontCamPhotonPoseEstimator.update(result);
@@ -95,12 +95,13 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     boolean received_vision_update = false;
     if (getVisionEnable()) {
       
-      var pose = getLCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+      var pose = getFCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
         received_vision_update = true;
-        System.out.println(" Updated pose with left cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
+        System.out.println(" Updated pose with front cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY() +
+            " rotation:" + pose2d.getRotation().getDegrees());
       }
       pose = getRCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {

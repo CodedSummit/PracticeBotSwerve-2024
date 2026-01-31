@@ -7,10 +7,12 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DriveRotateToPiece;
+import frc.robot.commands.DriveRotateToPosition;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.NoteShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -43,10 +45,12 @@ public class RobotContainer {
   private final AddressableLedSubsystem m_led = new AddressableLedSubsystem(20,9);
   private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem(m_led);
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
+  private final TurretSubsystem m_turretSubsystem = new TurretSubsystem();
 
   private final NoteShooterSubsystem m_noteShooterSubsystem = new NoteShooterSubsystem();
   private SwerveJoystickCmd swerveJoystickCmd;
   private DriveRotateToPiece driveRotateToPieceCmd;
+  private DriveRotateToPosition driveRotateToPosCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -66,6 +70,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     driveRotateToPieceCmd = new DriveRotateToPiece(swerveSubsystem, m_driverController, m_visionSubsystem);
+    driveRotateToPosCmd = new DriveRotateToPosition(swerveSubsystem, m_driverController, m_turretSubsystem);
 
     // make the chasetag command
 
@@ -104,7 +109,8 @@ public class RobotContainer {
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     m_driverController.a().whileTrue(driveRotateToPieceCmd);
-    m_driverController.b().whileTrue(m_noteShooterSubsystem.SpinCommand());
+    m_driverController.b().whileTrue(driveRotateToPosCmd);
+    m_driverController.button(1).whileTrue(m_noteShooterSubsystem.SpinCommand());
     m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
