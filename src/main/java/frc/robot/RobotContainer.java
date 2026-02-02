@@ -7,7 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DriveRotateToPiece;
-import frc.robot.commands.DriveRotateToPosition;
+import frc.robot.commands.SpinTowardTarget;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.NoteShooterSubsystem;
@@ -16,20 +16,14 @@ import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-//import com.pathplanner.lib.commands.PathfindHolonomic;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 //import com.pathplanner.lib.util.PIDConstants;
 //import com.pathplanner.lib.util.ReplanningConfig;
@@ -52,7 +46,8 @@ public class RobotContainer {
   private final NoteShooterSubsystem m_noteShooterSubsystem = new NoteShooterSubsystem();
   private SwerveJoystickCmd swerveJoystickCmd;
   private DriveRotateToPiece driveRotateToPieceCmd;
-  private DriveRotateToPosition driveRotateToPosCmd;
+  private SpinTowardTarget spinTowardTargetCmd;
+  private DriveRotateToPiece driveRotateToPosCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -73,7 +68,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     driveRotateToPieceCmd = new DriveRotateToPiece(swerveSubsystem, m_driverController, m_visionSubsystem);
-    driveRotateToPosCmd = new DriveRotateToPosition(swerveSubsystem, m_driverController, m_turretSubsystem);
+    spinTowardTargetCmd = new SpinTowardTarget(swerveSubsystem, m_turretSubsystem);
 
     // make the chasetag command
 
@@ -112,7 +107,7 @@ public class RobotContainer {
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     m_driverController.a().whileTrue(driveRotateToPieceCmd);
-    m_driverController.b().whileTrue(driveRotateToPosCmd);
+    m_driverController.button(2).onTrue(spinTowardTargetCmd);
     m_driverController.button(1).whileTrue(m_noteShooterSubsystem.SpinCommand());
     m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
