@@ -20,8 +20,8 @@ public class SpinTowardTarget extends Command {
   private final SwerveSubsystem swerveSubsystem;
   private double goalAngleDeg; // goal pose angle, degrees
   private static final double ANGLE_TOLERANCE = 1.0; // amount goal must change
-  private static final TrapezoidProfile.Constraints OMEGA_CONSTRATINTS = new TrapezoidProfile.Constraints(.6, 8);
-  private final ProfiledPIDController m_omegaController = new ProfiledPIDController(.5, 0, 0, OMEGA_CONSTRATINTS);
+  private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(.6, 8);
+  private final ProfiledPIDController m_omegaController = new ProfiledPIDController(.5, 0, 0, OMEGA_CONSTRAINTS);
 
   public SpinTowardTarget(SwerveSubsystem swerveSubsystem, TurretSubsystem turretSubsystem) {
 
@@ -80,9 +80,10 @@ public class SpinTowardTarget extends Command {
   private void checkGoal() {
 
     Pose2d robotPose = swerveSubsystem.getPose();
-    Pose2d robotToTargetPose = turretSubsystem.getTargetPose().relativeTo(robotPose);
+    Pose2d robotToTargetPose = turretSubsystem.getTargetPose(); //.relativeTo(robotPose);
     double rotInDeg = Math.atan2(robotToTargetPose.getY(), robotToTargetPose.getX()) * 180.0 / Math.PI; // goal pose
                                                                                                         // rotation
+    rotInDeg *= -1;
     if (Math.abs(rotInDeg - goalAngleDeg) > ANGLE_TOLERANCE) {
       // goal changed
       System.out.println("  Calculated goal pose rotation:" + rotInDeg);
