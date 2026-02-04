@@ -116,6 +116,7 @@ NetworkTableInstance inst = NetworkTableInstance.getDefault();
         System.out.println(" Updated pose with front cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY() +
             " rotation:" + pose2d.getRotation().getDegrees());
       }
+      /*
       pose = getRCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
@@ -123,6 +124,7 @@ NetworkTableInstance inst = NetworkTableInstance.getDefault();
         System.out.println(" Updated pose with right cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
         received_vision_update = true;
       }
+        */
 
     }
     if(received_vision_update){

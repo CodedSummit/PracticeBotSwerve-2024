@@ -13,15 +13,15 @@ import frc.robot.subsystems.TurretSubsystem;
 /*
  *  rotated toward a fixed position on the field
  */
-
+@Logged
 public class SpinTowardTarget extends Command {
 
   private final TurretSubsystem turretSubsystem;
   private final SwerveSubsystem swerveSubsystem;
   private double goalAngleDeg; // goal pose angle, degrees
-  private static final double ANGLE_TOLERANCE = 1.0; // amount goal must change
+  private static final double ANGLE_TOLERANCE = 5.0; // amount goal must change
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(.6, 8);
-  private final ProfiledPIDController m_omegaController = new ProfiledPIDController(.5, 0, 0, OMEGA_CONSTRAINTS);
+  private  ProfiledPIDController m_omegaController = new ProfiledPIDController(10, 0, 0, OMEGA_CONSTRAINTS);
 
   public SpinTowardTarget(SwerveSubsystem swerveSubsystem, TurretSubsystem turretSubsystem) {
 
@@ -73,17 +73,18 @@ public class SpinTowardTarget extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    // swerveSubsystem.stopModules();
     goalAngleDeg = 0.0;
   }
 
   private void checkGoal() {
 
     Pose2d robotPose = swerveSubsystem.getPose();
-    Pose2d robotToTargetPose = turretSubsystem.getTargetPose(); //.relativeTo(robotPose);
-    double rotInDeg = Math.atan2(robotToTargetPose.getY(), robotToTargetPose.getX()) * 180.0 / Math.PI; // goal pose
-                                                                                                        // rotation
-    rotInDeg *= -1;
+ //   Pose2d robotToTargetPose = turretSubsystem.getTargetPose().relativeTo(robotPose);
+    double dX=turretSubsystem.getTargetPose().getX()-robotPose.getX();
+    double dY=turretSubsystem.getTargetPose().getY()-robotPose.getY();
+ //   double rotInDeg = Math.atan2(robotToTargetPose.getY(), robotToTargetPose.getX()) * 180.0 / Math.PI; // goal pose rotation
+    double rotInDeg = Math.atan2(dY, dX) * 180.0 / Math.PI; // goal pose
+ //   rotInDeg *= -1;
     if (Math.abs(rotInDeg - goalAngleDeg) > ANGLE_TOLERANCE) {
       // goal changed
       System.out.println("  Calculated goal pose rotation:" + rotInDeg);
