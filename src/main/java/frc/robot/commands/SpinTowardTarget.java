@@ -22,7 +22,7 @@ public class SpinTowardTarget extends Command {
   private final TurretSubsystem turretSubsystem;
   @NotLogged
   private final SwerveSubsystem swerveSubsystem;
-  
+
   private double goalAngleDeg; // goal pose angle, degrees
   private static final double ANGLE_TOLERANCE = 5.0; // amount goal must change
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(.6, 8);
@@ -33,7 +33,7 @@ public class SpinTowardTarget extends Command {
     this.turretSubsystem = turretSubsystem;
     this.swerveSubsystem = swerveSubsystem;
     m_omegaController.setTolerance(Units.degreesToRadians(5));
-    m_omegaController.enableContinuousInput(-1, 1);
+    m_omegaController.enableContinuousInput(-Math.PI, Math.PI);
 
     addRequirements(swerveSubsystem);
   }
