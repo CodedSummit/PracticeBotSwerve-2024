@@ -70,10 +70,14 @@ public class TurretSubsystem extends SubsystemBase {
    * Turn the robot to the target pose rotation
    */
   private void spin() {
+    setSpeeds(calculateSpinSpeed());
+  }
+
+  public double calculateSpinSpeed() {
     checkGoal();
     Pose2d robotPose = swerveSubsystem.getPose();
     double omegaSpeed = m_omegaController.calculate(robotPose.getRotation().getRadians());
-    setSpeeds(omegaSpeed);
+    return omegaSpeed;
   }
 
   private void setSpeeds(double rotationSpeed) {

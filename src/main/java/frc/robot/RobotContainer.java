@@ -45,6 +45,8 @@ public class RobotContainer {
 
   private final NoteShooterSubsystem m_noteShooterSubsystem = new NoteShooterSubsystem();
   private SwerveJoystickCmd swerveJoystickCmd;
+  private SwerveJoystickCmd pointingSwerveJoystickCmd;
+
   private DriveRotateToPiece driveRotateToPieceCmd;
   private SpinTowardTarget spinTowardTargetCmd;
   private DriveRotateToPiece driveRotateToPosCmd;
@@ -66,6 +68,7 @@ public class RobotContainer {
       swerveSubsystem,
       m_driverController);
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
+    pointingSwerveJoystickCmd = new SwerveJoystickCmd(swerveSubsystem, m_driverController, m_turretSubsystem);
 
     driveRotateToPieceCmd = new DriveRotateToPiece(swerveSubsystem, m_driverController, m_visionSubsystem);
     spinTowardTargetCmd = new SpinTowardTarget(swerveSubsystem, m_turretSubsystem);

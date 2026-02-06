@@ -11,6 +11,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
 public class SwerveJoystickCmd extends Command {
 
@@ -35,6 +36,24 @@ public class SwerveJoystickCmd extends Command {
         addRequirements(swerveSubsystem);
     
     }
+
+    /*
+     * make a cmd that gets the rotation from the turret to stay pointed
+     */
+    public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem, CommandXboxController m_driverController, TurretSubsystem turret) {
+        this.swerveSubsystem = swerveSubsystem;
+        this.xSpdFunction = () -> -m_driverController.getLeftY();
+        this.ySpdFunction = () -> -m_driverController.getLeftX();
+        this.turningSpdFunction = () -> -turret.calculateSpinSpeed();
+        this.fieldOriented = true;
+        this.motionScale = swerveSubsystem.getNormalSpeedFactor();
+        this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+        this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+        this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+        addRequirements(swerveSubsystem);
+    
+    }
+
 
     @Override
     public void initialize() {
