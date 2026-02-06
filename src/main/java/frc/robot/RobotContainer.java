@@ -67,8 +67,10 @@ public class RobotContainer {
     swerveJoystickCmd = new SwerveJoystickCmd(
       swerveSubsystem,
       m_driverController);
-    swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
+
     pointingSwerveJoystickCmd = new SwerveJoystickCmd(swerveSubsystem, m_driverController, m_turretSubsystem);
+    //Currently, in order to get the pointingSwerveJoystickCmd to work, you must hardcode it to be the defaultCommand
+    swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     driveRotateToPieceCmd = new DriveRotateToPiece(swerveSubsystem, m_driverController, m_visionSubsystem);
     spinTowardTargetCmd = new SpinTowardTarget(swerveSubsystem, m_turretSubsystem);
@@ -128,7 +130,13 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
-    m_driverController.povDown().onTrue(new InstantCommand(() ->m_led.setStripBlue()));
+      m_driverController.axisGreaterThan(4, 0.5)
+      .whileTrue(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(pointingSwerveJoystickCmd)))
+      .onFalse(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(swerveJoystickCmd)));
+
+      m_driverController.povDown()
+      .onTrue(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(pointingSwerveJoystickCmd)))
+      .onFalse(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(swerveJoystickCmd)));
     m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripPurple()));
 
     // temporarily do while true so releasing button stops the path

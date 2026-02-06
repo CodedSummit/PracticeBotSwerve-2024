@@ -44,7 +44,7 @@ public class SwerveJoystickCmd extends Command {
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunction = () -> -m_driverController.getLeftY();
         this.ySpdFunction = () -> -m_driverController.getLeftX();
-        this.turningSpdFunction = () -> -turret.calculateSpinSpeed();
+        this.turningSpdFunction = () -> turret.calculateSpinSpeed();
         this.fieldOriented = true;
         this.motionScale = swerveSubsystem.getNormalSpeedFactor();
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
