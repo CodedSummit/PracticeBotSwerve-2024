@@ -26,7 +26,7 @@ public class SpinTowardTarget extends Command {
   private double goalAngleDeg; // goal pose angle, degrees
   private static final double ANGLE_TOLERANCE = 5.0; // amount goal must change
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(.6, 8);
-  private  PIDController m_omegaController = new PIDController(10, 0, 0);
+  private  PIDController m_omegaController = new PIDController(.5, 0, 0);
 
   public SpinTowardTarget(SwerveSubsystem swerveSubsystem, TurretSubsystem turretSubsystem) {
 
@@ -39,73 +39,24 @@ public class SpinTowardTarget extends Command {
   }
 
   @Override
-  public void initialize() {
-    var robotPose = swerveSubsystem.getPose();
-    //m_omegaController.reset(robotPose.getRotation().getRadians());
-    checkGoal();
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
-    spin();
+    turretSubsystem.pointToTarget();
   }
 
   /**
    * Turn the robot to the target pose rotation
    */
-  private void spin() {
-    checkGoal();
-    Pose2d robotPose = swerveSubsystem.getPose();
-    double omegaSpeed = m_omegaController.calculate(robotPose.getRotation().getRadians());
-    setSpeeds(omegaSpeed);
-  }
-
-  private void setSpeeds(double rotationSpeed) {
-    ChassisSpeeds currentChassisSpeeds = swerveSubsystem.getRobotRelativeSpeeds();
-    ChassisSpeeds goalSpeeds = new ChassisSpeeds(currentChassisSpeeds.vxMetersPerSecond,
-        currentChassisSpeeds.vyMetersPerSecond, rotationSpeed);
-    swerveSubsystem.driveRobotRelative(goalSpeeds);
-  }
-  public boolean isFinished() {
-    if (m_omegaController.atSetpoint()) {
-      // if we're at the goal we're done
-      System.out.println("Reached the spin target goal - STOPPING");
-      setSpeeds(0.0);
-      return true;
-    }
+  public boolean isFinished(){
+    //return turretSubsystem.isFinished();
     return false;
   }
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("spin to target END");
-
-    goalAngleDeg = 0;
-    setSpeeds(0.0);
+    turretSubsystem.end(interrupted);
   }
 
-  private void checkGoal() {
-
-    Pose2d robotPose = swerveSubsystem.getPose();
- //   Pose2d robotToTargetPose = turretSubsystem.getTargetPose().relativeTo(robotPose);
-    double dX=turretSubsystem.getTargetPose().getX()-robotPose.getX();
-    double dY=turretSubsystem.getTargetPose().getY()-robotPose.getY();
- //   double rotInDeg = Math.atan2(robotToTargetPose.getY(), robotToTargetPose.getX()) * 180.0 / Math.PI; // goal pose rotation
-    double rotInDeg = Math.atan2(dY, dX) * 180.0 / Math.PI; // goal pose
- //   rotInDeg *= -1;
-    if (Math.abs(rotInDeg - goalAngleDeg) > ANGLE_TOLERANCE) {
-      // goal changed
-      System.out.println("  Calculated goal pose rotation:" + rotInDeg);
-      updateGoal(rotInDeg);
-    }
-
-  }
-
-  /**
-   * Update the goal to the provided angle (in Field centered coordinates)
-   */
-  private void updateGoal(double newGoal) {
-    goalAngleDeg = newGoal;
-    m_omegaController.setSetpoint(goalAngleDeg * Math.PI / 180.0);
-  }
 }

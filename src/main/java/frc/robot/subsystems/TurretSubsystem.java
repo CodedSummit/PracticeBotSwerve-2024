@@ -28,7 +28,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double goalAngleDeg; // goal pose angle, degrees
   private static final double ANGLE_TOLERANCE = 5.0; // amount goal must change
-  private  PIDController m_omegaController = new PIDController(.5, 0, 0);
+  private  PIDController m_omegaController = new PIDController(5.0, 0, 0);
 
   /** Creates a new TurretSubsystem. */
   public TurretSubsystem(SwerveSubsystem swerveSS) {
@@ -69,10 +69,6 @@ public class TurretSubsystem extends SubsystemBase {
    * Turn the robot to the target pose rotation
    */
   private void spin() {
-    if (isFinished()) {
-      end(false);
-      return;
-    }
     checkGoal();
     Pose2d robotPose = swerveSubsystem.getPose();
     double omegaSpeed = m_omegaController.calculate(robotPose.getRotation().getRadians());
@@ -85,11 +81,11 @@ public class TurretSubsystem extends SubsystemBase {
         currentChassisSpeeds.vyMetersPerSecond, rotationSpeed);
     swerveSubsystem.driveRobotRelative(goalSpeeds);
   }
+
   public boolean isFinished() {
     if (m_omegaController.atSetpoint()) {
       // if we're at the goal we're done
-      System.out.println("Reached the spin target goal - STOPPING");
-      setSpeeds(0.0);
+   //   System.out.println("Reached the spin target goal - STOPPING");
       return true;
     }
     return false;

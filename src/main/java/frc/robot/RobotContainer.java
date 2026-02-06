@@ -107,7 +107,7 @@ public class RobotContainer {
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     m_driverController.a().whileTrue(driveRotateToPieceCmd);
-    m_driverController.b().onTrue(new InstantCommand(()-> m_turretSubsystem.pointToTarget()));
+    m_driverController.b().whileTrue(new SpinTowardTarget(swerveSubsystem, m_turretSubsystem));
     m_driverController.button(1).whileTrue(m_noteShooterSubsystem.SpinCommand());
     m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
 
