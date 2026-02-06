@@ -37,6 +37,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private void init() {
+    m_omegaController.enableContinuousInput(-Math.PI, Math.PI);
     SmartDashboard.putData(m_omegaController);
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable table = inst.getTable("datatable");
