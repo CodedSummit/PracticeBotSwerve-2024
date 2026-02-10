@@ -198,6 +198,10 @@ try {
 
     }
 
+    public String getDefault(){
+        return this.getDefaultCommand().getName();
+    }
+
     public double getTurboSpeedFactor(){
         return turboSpeedFactor.getDouble(0.5);
     }

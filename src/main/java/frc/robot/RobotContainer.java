@@ -126,19 +126,19 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getDampenedSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
-    m_driverController.axisGreaterThan(3, 0.5)
+    m_driverController.axisGreaterThan(2, 0.5)
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
-      m_driverController.axisGreaterThan(4, 0.5)
+      m_driverController.y()
       .whileTrue(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(pointingSwerveJoystickCmd)))
-      .onFalse(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(swerveJoystickCmd)));
-
+      .whileFalse(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(swerveJoystickCmd)));
+/* 
       m_driverController.povDown()
       .onTrue(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(pointingSwerveJoystickCmd)))
       .onFalse(new InstantCommand(()-> swerveSubsystem.setDefaultCommand(swerveJoystickCmd)));
     m_driverController.povUp().onTrue(new InstantCommand(() ->m_led.setStripPurple()));
-
+*/
     // temporarily do while true so releasing button stops the path
 //    m_driverController.povLeft().whileTrue(swerveSubsystem.followPathCommand("ShortRun"));
   }

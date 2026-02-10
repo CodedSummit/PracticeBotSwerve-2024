@@ -51,6 +51,7 @@ public class SwerveJoystickCmd extends Command {
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
         addRequirements(swerveSubsystem);
+        setName("PointingSwerveJoystickCmd");
     
     }
 

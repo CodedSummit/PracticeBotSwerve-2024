@@ -28,7 +28,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   private double goalAngleDeg; // goal pose angle, degrees
   private static final double ANGLE_TOLERANCE = 5.0; // amount goal must change
-  private  PIDController m_omegaController = new PIDController(5.0, 0, 0);
+  private  PIDController m_omegaController = new PIDController(2.5, 0, 0);
 
   /** Creates a new TurretSubsystem. */
   public TurretSubsystem(SwerveSubsystem swerveSS) {
