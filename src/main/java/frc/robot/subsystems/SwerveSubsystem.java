@@ -354,4 +354,9 @@ try {
         );
     }*/
 
+    public void noop() {
+        // noop method for switching default commands
+        
+    }
+
 }
